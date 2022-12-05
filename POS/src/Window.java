@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JScrollBar;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextArea;
 
 public class Window extends JFrame {
 
@@ -24,6 +25,10 @@ public class Window extends JFrame {
 	private JPanel panelLogin;
 	private JPanel panelMenu;
 	private IDandPassword logObj;
+	private JTextField subtotalField;
+	private JTextField totalField;
+	private JTextField textField;
+	private JTextField orderNumField;
 
 	/**
 	 * Launch the application.
@@ -136,6 +141,67 @@ public class Window extends JFrame {
 		logoutButton.setBounds(10, 705, 89, 23);
 		panelMenu.add(logoutButton);
 		
+		JPanel panelMakeOrder = new JPanel();
+		layeredMainPane.add(panelMakeOrder, "name_247097960798500");
+		panelMakeOrder.setLayout(null);
+		
+		subtotalField = new JTextField();
+		subtotalField.setEditable(false);
+		subtotalField.setBounds(817, 517, 137, 20);
+		panelMakeOrder.add(subtotalField);
+		subtotalField.setColumns(10);
+		
+		JLabel subtotalLabel = new JLabel("Sub-Total:");
+		subtotalLabel.setBounds(728, 520, 79, 14);
+		panelMakeOrder.add(subtotalLabel);
+		
+		totalField = new JTextField();
+		totalField.setEditable(false);
+		totalField.setBounds(817, 548, 137, 20);
+		panelMakeOrder.add(totalField);
+		totalField.setColumns(10);
+		
+		JLabel totalLabel = new JLabel("Total:");
+		totalLabel.setBounds(728, 551, 46, 14);
+		panelMakeOrder.add(totalLabel);
+		
+		textField = new JTextField();
+		textField.setEditable(false);
+		textField.setBounds(817, 579, 86, 20);
+		panelMakeOrder.add(textField);
+		textField.setColumns(10);
+		
+		JLabel lblNewLabel = new JLabel("# items:");
+		lblNewLabel.setBounds(728, 582, 46, 14);
+		panelMakeOrder.add(lblNewLabel);
+		
+		JTextArea orderArea = new JTextArea();
+		orderArea.setEditable(false);
+		orderArea.setBounds(728, 11, 226, 495);
+		panelMakeOrder.add(orderArea);
+		
+		orderNumField = new JTextField();
+		orderNumField.setEditable(false);
+		orderNumField.setBounds(817, 610, 86, 20);
+		panelMakeOrder.add(orderNumField);
+		orderNumField.setColumns(10);
+		
+		JLabel orderNumLabel = new JLabel("Order #");
+		orderNumLabel.setBounds(728, 613, 46, 14);
+		panelMakeOrder.add(orderNumLabel);
+		
+		JButton sendButton = new JButton("Send");
+		sendButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		sendButton.setBounds(728, 705, 89, 23);
+		panelMakeOrder.add(sendButton);
+		
+		JButton sendPayButton = new JButton("Send & Pay");
+		sendPayButton.setBounds(865, 705, 89, 23);
+		panelMakeOrder.add(sendPayButton);
+		
 	}
 	
 	public void switchMainPanel(JPanel panel){
@@ -144,5 +210,4 @@ public class Window extends JFrame {
         layeredMainPane.repaint();
         layeredMainPane.revalidate();
     }
-	
 }
