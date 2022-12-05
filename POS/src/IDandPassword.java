@@ -20,5 +20,9 @@ public class IDandPassword {
     		return false;
     		}
     }
+    
+    public void add_credentials(String username,String password) {
+    	login.put(username, password);
+    }
    
 }
