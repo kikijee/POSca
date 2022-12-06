@@ -17,6 +17,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import java.awt.GridLayout;
 import javax.swing.SwingConstants;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import javax.swing.table.DefaultTableModel;
 
 public class Window extends JFrame {
 
@@ -40,6 +43,7 @@ public class Window extends JFrame {
 	private JPanel panelRoll;
 	private JPanel panelEntree;
 	private JPanel panelDessert;
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -67,7 +71,7 @@ public class Window extends JFrame {
 		itemsObj = new Items();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1000, 800);
+		setBounds(100, 100, 1000, 650);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -76,7 +80,7 @@ public class Window extends JFrame {
 		this.setResizable(false);
 		
 		layeredMainPane = new JLayeredPane();
-		layeredMainPane.setBounds(10, 11, 964, 739);
+		layeredMainPane.setBounds(10, 11, 964, 602);
 		contentPane.add(layeredMainPane);
 		layeredMainPane.setLayout(new CardLayout(0, 0));
 		
@@ -86,20 +90,20 @@ public class Window extends JFrame {
 		
 		usernameField = new JTextField();
 		usernameField.setText("");
-		usernameField.setBounds(370, 289, 164, 20);
+		usernameField.setBounds(370, 190, 164, 20);
 		panelLogin.add(usernameField);
 		usernameField.setColumns(10);
 		
 		JLabel usernameLabel = new JLabel("Username");
-		usernameLabel.setBounds(370, 264, 164, 14);
+		usernameLabel.setBounds(370, 165, 164, 14);
 		panelLogin.add(usernameLabel);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(370, 398, 164, 20);
+		passwordField.setBounds(370, 260, 164, 20);
 		panelLogin.add(passwordField);
 		
 		JLabel passwordLabel = new JLabel("Password");
-		passwordLabel.setBounds(370, 373, 164, 14);
+		passwordLabel.setBounds(370, 235, 164, 14);
 		panelLogin.add(passwordLabel);
 		
 		JLabel loginLabel = new JLabel("LOGIN");
@@ -123,7 +127,7 @@ public class Window extends JFrame {
 				
 			}
 		});
-		loginButton.setBounds(445, 494, 89, 23);
+		loginButton.setBounds(445, 318, 89, 23);
 		panelLogin.add(loginButton);
 		
 		panelMenu = new JPanel();
@@ -135,7 +139,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		viewOrderButton.setBounds(286, 314, 89, 80);
+		viewOrderButton.setBounds(283, 210, 89, 80);
 		panelMenu.add(viewOrderButton);
 		
 		JButton makeOrderButton = new JButton("Make Order");
@@ -146,7 +150,7 @@ public class Window extends JFrame {
 			}
 		});
 		
-		makeOrderButton.setBounds(567, 314, 89, 80);
+		makeOrderButton.setBounds(575, 210, 89, 80);
 		panelMenu.add(makeOrderButton);
 		
 		JButton logoutButton = new JButton("LOGOUT");
@@ -155,7 +159,7 @@ public class Window extends JFrame {
 				switchMainPanel(panelLogin);
 			}
 		});
-		logoutButton.setBounds(10, 705, 89, 23);
+		logoutButton.setBounds(40, 548, 89, 23);
 		panelMenu.add(logoutButton);
 		
 		panelMakeOrder = new JPanel();
@@ -164,38 +168,33 @@ public class Window extends JFrame {
 		
 		subtotalField = new JTextField();
 		subtotalField.setEditable(false);
-		subtotalField.setBounds(817, 517, 137, 20);
+		subtotalField.setBounds(817, 441, 137, 20);
 		panelMakeOrder.add(subtotalField);
 		subtotalField.setColumns(10);
 		
 		JLabel subtotalLabel = new JLabel("Sub-Total:");
-		subtotalLabel.setBounds(728, 520, 79, 14);
+		subtotalLabel.setBounds(738, 444, 79, 14);
 		panelMakeOrder.add(subtotalLabel);
 		
 		totalField = new JTextField();
 		totalField.setEditable(false);
-		totalField.setBounds(817, 548, 137, 20);
+		totalField.setBounds(817, 466, 137, 20);
 		panelMakeOrder.add(totalField);
 		totalField.setColumns(10);
 		
 		JLabel totalLabel = new JLabel("Total:");
-		totalLabel.setBounds(728, 551, 46, 14);
+		totalLabel.setBounds(738, 469, 46, 14);
 		panelMakeOrder.add(totalLabel);
 		
 		textField = new JTextField();
 		textField.setEditable(false);
-		textField.setBounds(817, 579, 86, 20);
+		textField.setBounds(817, 491, 86, 20);
 		panelMakeOrder.add(textField);
 		textField.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("# items:");
-		lblNewLabel.setBounds(728, 582, 46, 14);
+		lblNewLabel.setBounds(738, 494, 46, 14);
 		panelMakeOrder.add(lblNewLabel);
-		
-		JTextArea orderArea = new JTextArea();
-		orderArea.setEditable(false);
-		orderArea.setBounds(728, 11, 226, 495);
-		panelMakeOrder.add(orderArea);
 		
 		orderNumField = new JTextField();
 		orderNumField.setEditable(false);
@@ -214,15 +213,20 @@ public class Window extends JFrame {
 			}
 		});
 		
-		sendButton.setBounds(728, 705, 89, 23);
+		sendButton.setBounds(739, 568, 89, 23);
 		panelMakeOrder.add(sendButton);
 		
 		JButton sendPayButton = new JButton("Send & Pay");
-		sendPayButton.setBounds(865, 705, 89, 23);
+		sendPayButton.setBounds(848, 568, 89, 23);
 		panelMakeOrder.add(sendPayButton);
 		
 		JButton voidButton = new JButton("Void");
-		voidButton.setBounds(728, 671, 89, 23);
+		voidButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				remove_from_table();
+			}
+		});
+		voidButton.setBounds(738, 534, 89, 23);
 		panelMakeOrder.add(voidButton);
 		
 		JButton orderBackButton = new JButton("Back");
@@ -231,11 +235,12 @@ public class Window extends JFrame {
 				switchMainPanel(panelMenu);
 			}
 		});
-		orderBackButton.setBounds(10, 705, 89, 23);
+		orderBackButton.setBounds(10, 568, 89, 23);
 		panelMakeOrder.add(orderBackButton);
 		// END ORDER PANEL BUTTONS
 		
-		// START FOOD CATEGORY BUTTONS
+		//===============Food Category Buttons===============
+		//Drink button
 		JButton drinkButton = new JButton("Drinks");
 		drinkButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -244,7 +249,7 @@ public class Window extends JFrame {
 		});
 		drinkButton.setBounds(10, 12, 89, 23);
 		panelMakeOrder.add(drinkButton);
-		
+		//Appetizer button
 		JButton appetizerButton = new JButton("Appetizers");
 		appetizerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -253,7 +258,7 @@ public class Window extends JFrame {
 		});
 		appetizerButton.setBounds(10, 46, 89, 23);
 		panelMakeOrder.add(appetizerButton);
-		
+		//Sushi button
 		JButton sushiButton = new JButton("Sushi");
 		sushiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -262,7 +267,7 @@ public class Window extends JFrame {
 		});
 		sushiButton.setBounds(10, 80, 89, 23);
 		panelMakeOrder.add(sushiButton);
-		
+		//Roll button
 		JButton rollButton = new JButton("Rolls");
 		rollButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -271,7 +276,7 @@ public class Window extends JFrame {
 		});
 		rollButton.setBounds(10, 114, 89, 23);
 		panelMakeOrder.add(rollButton);
-		
+		//Entree button
 		JButton entreeButton = new JButton("Entree's");
 		entreeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -280,7 +285,7 @@ public class Window extends JFrame {
 		});
 		entreeButton.setBounds(10, 148, 89, 23);
 		panelMakeOrder.add(entreeButton);
-		
+		//Dessert button
 		JButton dessertButton = new JButton("Dessert");
 		dessertButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -289,27 +294,123 @@ public class Window extends JFrame {
 		});
 		dessertButton.setBounds(10, 182, 89, 23);
 		panelMakeOrder.add(dessertButton);
-		//END FOOD CATEGORY BUTTONS
+		//======================================================
 		
+		//==========Layered item pane and panels===========
 		layeredItemPane = new JLayeredPane();
-		layeredItemPane.setBounds(117, 11, 582, 672);
+		layeredItemPane.setBounds(117, 11, 582, 591);
 		panelMakeOrder.add(layeredItemPane);
 		layeredItemPane.setLayout(new CardLayout(0, 0));
-		
+		//Drink panel
 		panelDrink = new JPanel();
 		layeredItemPane.add(panelDrink, "name_255391516279300");
 		panelDrink.setLayout(null);
+		//Appetizer Panel
+		panelAppetizer = new JPanel();
+		layeredItemPane.add(panelAppetizer, "name_255397136104900");
+		panelAppetizer.setLayout(null);
+		//Sushi Panel
+		panelSushi = new JPanel();
+		layeredItemPane.add(panelSushi, "name_255400090207500");
+		panelSushi.setLayout(null);
+		//Roll Panel
+		panelRoll = new JPanel();
+		layeredItemPane.add(panelRoll, "name_255403077667200");
+		panelRoll.setLayout(null);
+		//Entree Panel
+		panelEntree = new JPanel();
+		layeredItemPane.add(panelEntree, "name_255407088247600");
+		panelEntree.setLayout(null);
+		//Dessert Panel
+		panelDessert = new JPanel();
+		layeredItemPane.add(panelDessert, "name_255414797153500");
+		panelDessert.setLayout(null);
+		//==================================================
 		
+		//===============Drink Options===============
 		JButton asahiButton = new JButton("");
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_price(e.getSource()));
+				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
 		asahiButton.setBounds(10, 11, 100, 100);
 		panelDrink.add(asahiButton);
-		itemsObj.add_item(asahiButton,4.99F);
+		itemsObj.add_item(asahiButton,4.99F,"Asahi");
+		//===========================================
 		
+		//===============Appetizer Options===============
+		JButton seafoodSpringRollsButton = new JButton("");
+		seafoodSpringRollsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				add_to_table(itemsObj.return_item_data(e.getSource()));
+			}
+		});
+		seafoodSpringRollsButton.setBounds(10, 11, 100, 100);
+		panelAppetizer.add(seafoodSpringRollsButton);
+		itemsObj.add_item(seafoodSpringRollsButton,5.99F,"Seafood Spring Rolls");
+		//===============================================
+		
+		//===============Sushi Options===============
+		JButton salmonSushiButton = new JButton("");
+		salmonSushiButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				add_to_table(itemsObj.return_item_data(e.getSource()));
+			}
+		});
+		salmonSushiButton.setBounds(10, 11, 100, 100);
+		panelSushi.add(salmonSushiButton);
+		itemsObj.add_item(salmonSushiButton,6.99F,"Salmon Sushi");
+		//===========================================
+		
+		//===============Roll Options===============
+		JButton blueOceanButton = new JButton("");
+		blueOceanButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				add_to_table(itemsObj.return_item_data(e.getSource()));
+			}
+		});
+		blueOceanButton.setBounds(10, 11, 100, 100);
+		panelRoll.add(blueOceanButton);
+		itemsObj.add_item(blueOceanButton,19.99F,"Blue Ocean Roll");
+		//==========================================
+		
+		//===============Entree Options===============
+		JButton chickenKatsuButton = new JButton("");
+		chickenKatsuButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				add_to_table(itemsObj.return_item_data(e.getSource()));
+			}
+		});
+		chickenKatsuButton.setBounds(10, 11, 100, 100);
+		panelEntree.add(chickenKatsuButton);
+		itemsObj.add_item(chickenKatsuButton,21.99F,"Chicken Katsu Entree");
+		//============================================
+		
+		//===============Desert Options===============
+		JButton carmelAppleButton = new JButton("");
+		carmelAppleButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				add_to_table(itemsObj.return_item_data(e.getSource()));
+			}
+		});
+		carmelAppleButton.setBounds(10, 11, 100, 100);
+		panelDessert.add(carmelAppleButton);
+		itemsObj.add_item(carmelAppleButton,4.99F,"Carmel Apple");
+		//============================================
+		
+		//=================Item Labels=================
+		JLabel lblNewLabel_1 = new JLabel("Seafood Spring Rolls");
+		lblNewLabel_1.setHorizontalTextPosition(SwingConstants.CENTER);
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1.setBounds(10, 122, 100, 14);
+		panelAppetizer.add(lblNewLabel_1);
 		
 		JLabel lblNewLabel_2 = new JLabel("Asahi");
 		lblNewLabel_2.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -317,60 +418,11 @@ public class Window extends JFrame {
 		lblNewLabel_2.setBounds(10, 122, 100, 14);
 		panelDrink.add(lblNewLabel_2);
 		
-		panelAppetizer = new JPanel();
-		layeredItemPane.add(panelAppetizer, "name_255397136104900");
-		panelAppetizer.setLayout(null);
-		
-		JButton seafoodSpringRollsButton = new JButton("");
-		seafoodSpringRollsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_price(e.getSource()));
-			}
-		});
-		seafoodSpringRollsButton.setBounds(10, 11, 100, 100);
-		panelAppetizer.add(seafoodSpringRollsButton);
-		itemsObj.add_item(seafoodSpringRollsButton,5.99F);
-		
-		JLabel lblNewLabel_1 = new JLabel("Seafood Spring Rolls");
-		lblNewLabel_1.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setBounds(10, 122, 100, 14);
-		panelAppetizer.add(lblNewLabel_1);
-		
-		
-		panelSushi = new JPanel();
-		layeredItemPane.add(panelSushi, "name_255400090207500");
-		panelSushi.setLayout(null);
-		
-		JButton salmonSushiButton = new JButton("");
-		salmonSushiButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_price(e.getSource()));
-			}
-		});
-		salmonSushiButton.setBounds(10, 11, 100, 100);
-		panelSushi.add(salmonSushiButton);
-		itemsObj.add_item(salmonSushiButton,6.99F);
-		
 		JLabel lblNewLabel_3 = new JLabel("Salmon Sushi");
 		lblNewLabel_3.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblNewLabel_3.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_3.setBounds(10, 122, 100, 14);
 		panelSushi.add(lblNewLabel_3);
-		
-		panelRoll = new JPanel();
-		layeredItemPane.add(panelRoll, "name_255403077667200");
-		panelRoll.setLayout(null);
-		
-		JButton blueOceanButton = new JButton("");
-		blueOceanButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_price(e.getSource()));
-			}
-		});
-		blueOceanButton.setBounds(10, 11, 100, 100);
-		panelRoll.add(blueOceanButton);
-		itemsObj.add_item(blueOceanButton,19.99F);
 		
 		JLabel lblNewLabel_4 = new JLabel("Blue Ocean Roll");
 		lblNewLabel_4.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -378,45 +430,47 @@ public class Window extends JFrame {
 		lblNewLabel_4.setBounds(10, 122, 100, 14);
 		panelRoll.add(lblNewLabel_4);
 		
-		panelEntree = new JPanel();
-		layeredItemPane.add(panelEntree, "name_255407088247600");
-		panelEntree.setLayout(null);
-		
-		JButton chickenKatsuButton = new JButton("");
-		chickenKatsuButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_price(e.getSource()));
-			}
-		});
-		chickenKatsuButton.setBounds(10, 11, 100, 100);
-		panelEntree.add(chickenKatsuButton);
-		itemsObj.add_item(chickenKatsuButton,21.99F);
-		
 		JLabel lblNewLabel_5 = new JLabel("<html>Chicken Katsu<br/>Entree</html>");
 		lblNewLabel_5.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_5.setBounds(10, 122, 100, 28);
 		panelEntree.add(lblNewLabel_5);
 		
-		panelDessert = new JPanel();
-		layeredItemPane.add(panelDessert, "name_255414797153500");
-		panelDessert.setLayout(null);
-		
-		JButton carmelAppleButton = new JButton("");
-		carmelAppleButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_price(e.getSource()));
-			}
-		});
-		carmelAppleButton.setBounds(10, 11, 100, 100);
-		panelDessert.add(carmelAppleButton);
-		itemsObj.add_item(carmelAppleButton,4.99F);
-		
 		JLabel lblNewLabel_6 = new JLabel("Carmel Apple");
 		lblNewLabel_6.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblNewLabel_6.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_6.setBounds(10, 122, 100, 14);
 		panelDessert.add(lblNewLabel_6);
+		
+		JScrollPane OrderscrollPane = new JScrollPane();
+		OrderscrollPane.setBounds(709, 11, 245, 419);
+		panelMakeOrder.add(OrderscrollPane);
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Item", "Quantity", "Price"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, Integer.class, Float.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		table.getColumnModel().getColumn(0).setPreferredWidth(110);
+		table.getColumnModel().getColumn(1).setPreferredWidth(52);
+		OrderscrollPane.setViewportView(table);
+		//=============================================
 		
 		
 		
@@ -434,5 +488,39 @@ public class Window extends JFrame {
 		layeredItemPane.add(panel);
 		layeredMainPane.repaint();
 		layeredItemPane.revalidate();
+	}
+	
+	public void add_to_table(Tuple<String,Float>tuple) {
+		int check = if_exist(tuple.x);
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		if(check != -1) {
+			model.setValueAt(Integer.valueOf(model.getValueAt(check,1).toString())+Integer.valueOf(1),check,1);
+			model.setValueAt(Float.parseFloat(model.getValueAt(check,2).toString())+tuple.y,check,2);
+		}
+		else {
+			model.addRow(new Object[] {tuple.x,1,tuple.y});
+		}
+	}
+	
+	public void remove_from_table() {
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		if(table.getSelectedRow() != -1) {
+			if(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString()) == 1) {
+				model.removeRow(table.getSelectedRow());
+			}
+			else {
+				model.setValueAt(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString())-Integer.valueOf(1),table.getSelectedRow(),1);
+				model.setValueAt(Float.parseFloat(model.getValueAt(table.getSelectedRow(),2).toString())-(Float.parseFloat(model.getValueAt(table.getSelectedRow(),2).toString()))/(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString())+1),table.getSelectedRow(),2);
+			}
+		}
+	}
+	
+	public int if_exist(String item) {
+		for(int i = 0; i < table.getRowCount(); i++) {
+			if(table.getModel().getValueAt(i, 0) == item) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }
