@@ -193,7 +193,7 @@ public class Window extends JFrame {
 		textField.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("# items:");
-		lblNewLabel.setBounds(738, 494, 46, 14);
+		lblNewLabel.setBounds(738, 494, 69, 14);
 		panelMakeOrder.add(lblNewLabel);
 		
 		orderNumField = new JTextField();
@@ -490,7 +490,7 @@ public class Window extends JFrame {
 		layeredItemPane.revalidate();
 	}
 	
-	public void add_to_table(Tuple<String,Float>tuple) {
+	public void add_to_table(Tuple<String,Float>tuple) {	// adding item to table (Tuple object has item name and price)
 		int check = if_exist(tuple.x);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(check != -1) {
@@ -502,7 +502,7 @@ public class Window extends JFrame {
 		}
 	}
 	
-	public void remove_from_table() {
+	public void remove_from_table() {	// function removes item from order table
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(table.getSelectedRow() != -1) {
 			if(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString()) == 1) {
@@ -515,12 +515,16 @@ public class Window extends JFrame {
 		}
 	}
 	
-	public int if_exist(String item) {
+	public int if_exist(String item) {	// checks if item exists in the order table
 		for(int i = 0; i < table.getRowCount(); i++) {
 			if(table.getModel().getValueAt(i, 0) == item) {
 				return i;
 			}
 		}
 		return -1;
+	}
+	
+	public void update_price(int priceUpdate) {
+		
 	}
 }
