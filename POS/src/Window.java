@@ -13,6 +13,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.JScrollBar;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import java.awt.GridLayout;
@@ -33,7 +35,7 @@ public class Window extends JFrame {
 	private Items itemsObj;
 	private JTextField subtotalField;
 	private JTextField totalField;
-	private JTextField textField;
+	private JTextField numItemField;
 	private JTextField orderNumField;
 	private JPanel panelMakeOrder;
 	private JLayeredPane layeredItemPane;
@@ -44,6 +46,8 @@ public class Window extends JFrame {
 	private JPanel panelEntree;
 	private JPanel panelDessert;
 	private JTable table;
+	NumberFormat number = NumberFormat.getInstance();
+	private ArrayList<Order>orders = new ArrayList<Order>();
 
 	/**
 	 * Launch the application.
@@ -65,6 +69,7 @@ public class Window extends JFrame {
 	 * Create the frame.
 	 */
 	public Window() {
+		number.setMaximumFractionDigits(2);
 		setVisible(true);
 		// setting window and contentPane settings 
 		logObj = new IDandPassword();
@@ -167,6 +172,7 @@ public class Window extends JFrame {
 		panelMakeOrder.setLayout(null);
 		
 		subtotalField = new JTextField();
+		subtotalField.setText("0.00");
 		subtotalField.setEditable(false);
 		subtotalField.setBounds(817, 441, 137, 20);
 		panelMakeOrder.add(subtotalField);
@@ -177,6 +183,7 @@ public class Window extends JFrame {
 		panelMakeOrder.add(subtotalLabel);
 		
 		totalField = new JTextField();
+		totalField.setText("0.00");
 		totalField.setEditable(false);
 		totalField.setBounds(817, 466, 137, 20);
 		panelMakeOrder.add(totalField);
@@ -186,11 +193,12 @@ public class Window extends JFrame {
 		totalLabel.setBounds(738, 469, 46, 14);
 		panelMakeOrder.add(totalLabel);
 		
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setBounds(817, 491, 86, 20);
-		panelMakeOrder.add(textField);
-		textField.setColumns(10);
+		numItemField = new JTextField();
+		numItemField.setText("0");
+		numItemField.setEditable(false);
+		numItemField.setBounds(817, 491, 86, 20);
+		panelMakeOrder.add(numItemField);
+		numItemField.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("# items:");
 		lblNewLabel.setBounds(738, 494, 69, 14);
@@ -210,6 +218,7 @@ public class Window extends JFrame {
 		JButton sendButton = new JButton("Send");
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				add_order();
 			}
 		});
 		
@@ -217,6 +226,11 @@ public class Window extends JFrame {
 		panelMakeOrder.add(sendButton);
 		
 		JButton sendPayButton = new JButton("Send & Pay");
+		sendPayButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				print_orders();
+			}
+		});
 		sendPayButton.setBounds(848, 568, 89, 23);
 		panelMakeOrder.add(sendPayButton);
 		
@@ -232,6 +246,9 @@ public class Window extends JFrame {
 		JButton orderBackButton = new JButton("Back");
 		orderBackButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				model.getDataVector().removeAllElements();
+				model.fireTableDataChanged();
 				switchMainPanel(panelMenu);
 			}
 		});
@@ -500,11 +517,14 @@ public class Window extends JFrame {
 		else {
 			model.addRow(new Object[] {tuple.x,1,tuple.y});
 		}
+		update_price(tuple.y);
 	}
 	
 	public void remove_from_table() {	// function removes item from order table
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(table.getSelectedRow() != -1) {
+			Float price = (Float.parseFloat(model.getValueAt(table.getSelectedRow(),2).toString()))/(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString()));
+			
 			if(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString()) == 1) {
 				model.removeRow(table.getSelectedRow());
 			}
@@ -512,6 +532,7 @@ public class Window extends JFrame {
 				model.setValueAt(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString())-Integer.valueOf(1),table.getSelectedRow(),1);
 				model.setValueAt(Float.parseFloat(model.getValueAt(table.getSelectedRow(),2).toString())-(Float.parseFloat(model.getValueAt(table.getSelectedRow(),2).toString()))/(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString())+1),table.getSelectedRow(),2);
 			}
+			update_price(Float.parseFloat(number.format(-1*price)));
 		}
 	}
 	
@@ -524,7 +545,51 @@ public class Window extends JFrame {
 		return -1;
 	}
 	
-	public void update_price(int priceUpdate) {
+	public void update_price(Float priceUpdate) { // will update price when user adds/removes items
+		System.out.println(priceUpdate);
+		Float price = Float.parseFloat(subtotalField.getText());
+		price += priceUpdate;
+		subtotalField.setText(number.format((price)));
 		
+		price = Float.parseFloat(totalField.getText());
+		price += (priceUpdate * 1.08F);
+		totalField.setText(number.format((price)));
+		
+		if(priceUpdate > 0) {
+			numItemField.setText(String.valueOf(Integer.parseInt(numItemField.getText())+1));
+		}
+		else {
+			numItemField.setText(String.valueOf(Integer.parseInt(numItemField.getText())-1));
+		}
 	}
+	
+	public void add_order() { // will add order to orders ArrayList
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		if(model.getRowCount() != 0) {
+			ArrayList<Thuple<String,Integer,Float>>items = new ArrayList<Thuple<String,Integer,Float>>();
+			Thuple<String,Integer,Float> item;
+			String name;
+			Integer quantity;
+			Float price;
+			
+			for(int i = 0; i < model.getRowCount(); i++) {
+				name = String.valueOf(model.getValueAt(i, 0));
+				quantity = Integer.valueOf(model.getValueAt(i, 1).toString());
+				price = Float.valueOf(model.getValueAt(i, 2).toString());
+				item = new Thuple<String,Integer,Float>(name,quantity,price);
+				items.add(item);
+			}
+			Order ordertemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,items);
+			orders.add(ordertemp);
+		}
+		model.getDataVector().removeAllElements();
+		model.fireTableDataChanged();
+	}
+	
+	public void print_orders() {
+		for(int i = 0; i < orders.size(); i++) {
+			orders.get(i).print_order();
+		}
+	}
+	
 }
