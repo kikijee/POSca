@@ -15,6 +15,8 @@ import javax.swing.JScrollBar;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import java.awt.GridLayout;
@@ -26,6 +28,7 @@ import javax.swing.table.DefaultTableModel;
 public class Window extends JFrame {
 
 	private JPanel contentPane;
+	private JPanel panelOrders;
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JLayeredPane layeredMainPane;
@@ -46,8 +49,14 @@ public class Window extends JFrame {
 	private JPanel panelEntree;
 	private JPanel panelDessert;
 	private JTable table;
-	NumberFormat number = NumberFormat.getInstance();
-	private ArrayList<Order>orders = new ArrayList<Order>();
+	NumberFormat number = NumberFormat.getInstance();			// for two decimal point for total
+	private ArrayList<Order>orders = new ArrayList<Order>();	// list for all orders
+	private JTable table_1;
+	private String currUser;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTable table_2;
 
 	/**
 	 * Launch the application.
@@ -120,6 +129,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				if(logObj.validate(usernameField.getText(),new String(passwordField.getPassword()))) {
+					currUser = usernameField.getText();
 					usernameField.setText(null);
 					passwordField.setText(null);
 					switchMainPanel(panelMenu);
@@ -142,6 +152,7 @@ public class Window extends JFrame {
 		JButton viewOrderButton = new JButton("View Order");
 		viewOrderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				switchMainPanel(panelOrders);
 			}
 		});
 		viewOrderButton.setBounds(283, 210, 89, 80);
@@ -348,7 +359,7 @@ public class Window extends JFrame {
 		JButton asahiButton = new JButton("");
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -361,7 +372,7 @@ public class Window extends JFrame {
 		JButton seafoodSpringRollsButton = new JButton("");
 		seafoodSpringRollsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -374,7 +385,7 @@ public class Window extends JFrame {
 		JButton salmonSushiButton = new JButton("");
 		salmonSushiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -387,7 +398,7 @@ public class Window extends JFrame {
 		JButton blueOceanButton = new JButton("");
 		blueOceanButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -400,7 +411,7 @@ public class Window extends JFrame {
 		JButton chickenKatsuButton = new JButton("");
 		chickenKatsuButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -413,7 +424,7 @@ public class Window extends JFrame {
 		JButton carmelAppleButton = new JButton("");
 		carmelAppleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(itemsObj.return_item_data(e.getSource()).toString());
+				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -487,6 +498,100 @@ public class Window extends JFrame {
 		table.getColumnModel().getColumn(0).setPreferredWidth(110);
 		table.getColumnModel().getColumn(1).setPreferredWidth(52);
 		OrderscrollPane.setViewportView(table);
+		
+		panelOrders = new JPanel();
+		layeredMainPane.add(panelOrders, "name_71322738432400");
+		panelOrders.setLayout(null);
+		
+		JScrollPane viewOrderscrollPane = new JScrollPane();
+		viewOrderscrollPane.setBounds(10, 11, 569, 580);
+		panelOrders.add(viewOrderscrollPane);
+		
+		table_1 = new JTable();
+		table_1.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"ID", "Total", "Time", "Server", "Paid"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				Integer.class, Float.class, String.class, String.class, Boolean.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		table_1.getColumnModel().getColumn(3).setResizable(false);
+		viewOrderscrollPane.setViewportView(table_1);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(589, 11, 365, 470);
+		panelOrders.add(scrollPane);
+		
+		table_2 = new JTable();
+		table_2.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Item", "Quantity", "Price"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, Integer.class, Float.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane.setViewportView(table_2);
+		
+		JButton btnNewButton = new JButton("Back");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchMainPanel(panelMenu);
+			}
+		});
+		btnNewButton.setBounds(589, 568, 89, 23);
+		panelOrders.add(btnNewButton);
+		
+		JButton btnNewButton_1 = new JButton("Edit");
+		btnNewButton_1.setBounds(589, 492, 89, 23);
+		panelOrders.add(btnNewButton_1);
+		
+		JButton btnNewButton_2 = new JButton("Void");
+		btnNewButton_2.setBounds(589, 526, 89, 23);
+		panelOrders.add(btnNewButton_2);
+		
+		JLabel lblNewLabel_7 = new JLabel("Total:");
+		lblNewLabel_7.setBounds(714, 530, 46, 14);
+		panelOrders.add(lblNewLabel_7);
+		
+		JLabel lblNewLabel_8 = new JLabel("Subtotal:");
+		lblNewLabel_8.setBounds(714, 496, 46, 14);
+		panelOrders.add(lblNewLabel_8);
+		
+		JLabel lblNewLabel_9 = new JLabel("# Items:");
+		lblNewLabel_9.setBounds(714, 572, 46, 14);
+		panelOrders.add(lblNewLabel_9);
+		
+		textField = new JTextField();
+		textField.setEditable(false);
+		textField.setBounds(770, 493, 86, 20);
+		panelOrders.add(textField);
+		textField.setColumns(10);
+		
+		textField_1 = new JTextField();
+		textField_1.setEditable(false);
+		textField_1.setColumns(10);
+		textField_1.setBounds(770, 527, 86, 20);
+		panelOrders.add(textField_1);
+		
+		textField_2 = new JTextField();
+		textField_2.setEditable(false);
+		textField_2.setColumns(10);
+		textField_2.setBounds(770, 569, 86, 20);
+		panelOrders.add(textField_2);
 		//=============================================
 		
 		
@@ -520,6 +625,12 @@ public class Window extends JFrame {
 		update_price(tuple.y);
 	}
 	
+	public void add_to_order_table() {
+		if(!orders.isEmpty()) {
+			
+		}
+	}
+	
 	public void remove_from_table() {	// function removes item from order table
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(table.getSelectedRow() != -1) {
@@ -546,7 +657,7 @@ public class Window extends JFrame {
 	}
 	
 	public void update_price(Float priceUpdate) { // will update price when user adds/removes items
-		System.out.println(priceUpdate);
+		//System.out.println(priceUpdate);
 		Float price = Float.parseFloat(subtotalField.getText());
 		price += priceUpdate;
 		subtotalField.setText(number.format((price)));
@@ -565,13 +676,16 @@ public class Window extends JFrame {
 	
 	public void add_order() { // will add order to orders ArrayList
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		Calendar date = Calendar.getInstance();
+		String time = String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
+		System.out.println(time);
+		
 		if(model.getRowCount() != 0) {
 			ArrayList<Thuple<String,Integer,Float>>items = new ArrayList<Thuple<String,Integer,Float>>();
 			Thuple<String,Integer,Float> item;
 			String name;
 			Integer quantity;
 			Float price;
-			
 			for(int i = 0; i < model.getRowCount(); i++) {
 				name = String.valueOf(model.getValueAt(i, 0));
 				quantity = Integer.valueOf(model.getValueAt(i, 1).toString());
@@ -579,11 +693,14 @@ public class Window extends JFrame {
 				item = new Thuple<String,Integer,Float>(name,quantity,price);
 				items.add(item);
 			}
-			Order ordertemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,items);
+			Order ordertemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser,time,items);
 			orders.add(ordertemp);
 		}
 		model.getDataVector().removeAllElements();
 		model.fireTableDataChanged();
+		subtotalField.setText("0.00");
+		totalField.setText("0.00");
+		numItemField.setText("0");
 	}
 	
 	public void print_orders() {
@@ -591,5 +708,4 @@ public class Window extends JFrame {
 			orders.get(i).print_order();
 		}
 	}
-	
 }
