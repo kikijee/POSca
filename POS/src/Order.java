@@ -1,12 +1,14 @@
 import java.util.ArrayList;
 
+import javax.swing.table.DefaultTableModel;
+
 public class Order {
 	private float subtotal;
 	private float total;
 	private int numItems;
 	private boolean paid;
 	private String user;
-	private ArrayList<Thuple<String,Integer,Float>>  items;
+	private ArrayList<Thuple<String,Integer,Float>> items;
 	private String time;
 	private int id;
 	private static int idCounter = 0;
@@ -27,5 +29,9 @@ public class Order {
 		for(int i = 0; i < items.size(); i++) {
 			System.out.println(items.get(i).toString());
 		}
+	}
+	
+	public void add_order(DefaultTableModel model) {	// add sent order to the orders table
+		model.addRow(new Object[] {id,total,time,user,paid});
 	}
 }

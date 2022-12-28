@@ -608,12 +608,12 @@ public class Window extends JFrame {
 	public void switchItemPanel(JPanel panel) {
 		layeredItemPane.removeAll();
 		layeredItemPane.add(panel);
-		layeredMainPane.repaint();
+		layeredItemPane.repaint();
 		layeredItemPane.revalidate();
 	}
 	
 	public void add_to_table(Tuple<String,Float>tuple) {	// adding item to table (Tuple object has item name and price)
-		int check = if_exist(tuple.x);
+		int check = if_exist(tuple.x);	// checking if item exists already
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(check != -1) {
 			model.setValueAt(Integer.valueOf(model.getValueAt(check,1).toString())+Integer.valueOf(1),check,1);
@@ -627,6 +627,8 @@ public class Window extends JFrame {
 	
 	public void add_to_order_table() {
 		if(!orders.isEmpty()) {
+			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+			orders.get(orders.size()-1).add_order(model);
 			
 		}
 	}
@@ -678,7 +680,7 @@ public class Window extends JFrame {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		Calendar date = Calendar.getInstance();
 		String time = String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
-		System.out.println(time);
+		//System.out.println(time);
 		
 		if(model.getRowCount() != 0) {
 			ArrayList<Thuple<String,Integer,Float>>items = new ArrayList<Thuple<String,Integer,Float>>();
@@ -695,6 +697,7 @@ public class Window extends JFrame {
 			}
 			Order ordertemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser,time,items);
 			orders.add(ordertemp);
+			add_to_order_table();
 		}
 		model.getDataVector().removeAllElements();
 		model.fireTableDataChanged();
