@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 public class Order {
@@ -33,5 +34,14 @@ public class Order {
 	
 	public void add_order(DefaultTableModel model) {	// add sent order to the orders table
 		model.addRow(new Object[] {id,total,time,user,paid});
+	}
+	
+	public void draw_orders(DefaultTableModel model, JTextField sub, JTextField tot, JTextField it) {
+		for(int i = 0; i < items.size(); i++) {
+			model.addRow(new Object[] {items.get(i).x,items.get(i).y,items.get(i).z});
+			sub.setText(String.valueOf(subtotal));
+			tot.setText(String.valueOf(total));
+			it.setText(String.valueOf(numItems));
+		}
 	}
 }

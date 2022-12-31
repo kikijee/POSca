@@ -3,11 +3,14 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 
 import java.awt.CardLayout;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
@@ -53,10 +56,11 @@ public class Window extends JFrame {
 	private ArrayList<Order>orders = new ArrayList<Order>();	// list for all orders
 	private JTable table_1;
 	private String currUser;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField subtotalOrdersField;
+	private JTextField totalOrdersField;
+	private JTextField itemsOrdersField;
 	private JTable table_2;
+	private int row = -1;
 
 	/**
 	 * Launch the application.
@@ -521,13 +525,33 @@ public class Window extends JFrame {
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
 		});
-		table_1.getColumnModel().getColumn(3).setResizable(false);
 		viewOrderscrollPane.setViewportView(table_1);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(589, 11, 365, 470);
 		panelOrders.add(scrollPane);
+		
+		
+		// table_1 mouse click event
+		table_1.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			public void valueChanged(ListSelectionEvent event) {
+				if(table_1.getSelectedRow() != row) {
+					DefaultTableModel model = (DefaultTableModel) table_2.getModel();
+					model.getDataVector().removeAllElements();
+					subtotalOrdersField.setText(currUser);
+					model.fireTableDataChanged();
+					orders.get(table_1.getSelectedRow()).draw_orders(model,subtotalOrdersField,totalOrdersField,itemsOrdersField);
+					row = table_1.getSelectedRow();
+				}
+			}
+		});
 		
 		table_2 = new JTable();
 		table_2.setModel(new DefaultTableModel(
@@ -575,23 +599,26 @@ public class Window extends JFrame {
 		lblNewLabel_9.setBounds(714, 572, 46, 14);
 		panelOrders.add(lblNewLabel_9);
 		
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setBounds(770, 493, 86, 20);
-		panelOrders.add(textField);
-		textField.setColumns(10);
+		subtotalOrdersField = new JTextField();
+		subtotalOrdersField.setText("0.00");
+		subtotalOrdersField.setEditable(false);
+		subtotalOrdersField.setBounds(770, 493, 86, 20);
+		panelOrders.add(subtotalOrdersField);
+		subtotalOrdersField.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setEditable(false);
-		textField_1.setColumns(10);
-		textField_1.setBounds(770, 527, 86, 20);
-		panelOrders.add(textField_1);
+		totalOrdersField = new JTextField();
+		totalOrdersField.setText("0.00");
+		totalOrdersField.setEditable(false);
+		totalOrdersField.setColumns(10);
+		totalOrdersField.setBounds(770, 527, 86, 20);
+		panelOrders.add(totalOrdersField);
 		
-		textField_2 = new JTextField();
-		textField_2.setEditable(false);
-		textField_2.setColumns(10);
-		textField_2.setBounds(770, 569, 86, 20);
-		panelOrders.add(textField_2);
+		itemsOrdersField = new JTextField();
+		itemsOrdersField.setText("0");
+		itemsOrdersField.setEditable(false);
+		itemsOrdersField.setColumns(10);
+		itemsOrdersField.setBounds(770, 569, 86, 20);
+		panelOrders.add(itemsOrdersField);
 		//=============================================
 		
 		
@@ -711,4 +738,5 @@ public class Window extends JFrame {
 			orders.get(i).print_order();
 		}
 	}
+	
 }
