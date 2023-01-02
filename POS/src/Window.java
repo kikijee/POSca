@@ -55,7 +55,8 @@ public class Window extends JFrame {
 	NumberFormat number = NumberFormat.getInstance();			// for two decimal point for total
 	private ArrayList<Order>orders = new ArrayList<Order>();	// list for all orders
 	private JTable table_1;
-	private String currUser;
+	//private String currUser;
+	private User currUser;
 	private JTextField subtotalOrdersField;
 	private JTextField totalOrdersField;
 	private JTextField itemsOrdersField;
@@ -133,7 +134,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				if(logObj.validate(usernameField.getText(),new String(passwordField.getPassword()))) {
-					currUser = usernameField.getText();
+					currUser = logObj.get_user(usernameField.getText());
 					usernameField.setText(null);
 					passwordField.setText(null);
 					switchMainPanel(panelMenu);
@@ -542,10 +543,11 @@ public class Window extends JFrame {
 		// table_1 mouse click event
 		table_1.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent event) {
-				if(table_1.getSelectedRow() != row) {
+				if(table_1.getSelectedRow() == -1) {return;}
+				else if(table_1.getSelectedRow() != row) {
 					DefaultTableModel model = (DefaultTableModel) table_2.getModel();
 					model.getDataVector().removeAllElements();
-					subtotalOrdersField.setText(currUser);
+					//subtotalOrdersField.setText(currUser.return_username());
 					model.fireTableDataChanged();
 					orders.get(table_1.getSelectedRow()).draw_orders(model,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 					row = table_1.getSelectedRow();
@@ -573,17 +575,68 @@ public class Window extends JFrame {
 		JButton btnNewButton = new JButton("Back");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				DefaultTableModel model = (DefaultTableModel) table_2.getModel();
+				model.getDataVector().removeAllElements();
+				model.fireTableDataChanged();
+				table_1.getSelectionModel().clearSelection();
+				subtotalOrdersField.setText("0.00");
+				totalOrdersField.setText("0.00");
+				itemsOrdersField.setText("0");
 				switchMainPanel(panelMenu);
+				row = -1;
 			}
 		});
 		btnNewButton.setBounds(589, 568, 89, 23);
 		panelOrders.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Edit");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!table_1.getSelectionModel().isSelectionEmpty()) {
+					Order edit = orders.get(table_1.getSelectedRow());
+					DefaultTableModel model = (DefaultTableModel) table_2.getModel();
+					model.getDataVector().removeAllElements();
+					model.fireTableDataChanged();
+					table_1.getSelectionModel().clearSelection();
+					subtotalOrdersField.setText("0.00");
+					totalOrdersField.setText("0.00");
+					itemsOrdersField.setText("0");
+					row = -1;
+					
+					edit.draw_orders((DefaultTableModel) table.getModel(), subtotalField, totalField, numItemField);
+					switchMainPanel(panelMakeOrder);
+				}
+			}
+		});
 		btnNewButton_1.setBounds(589, 492, 89, 23);
 		panelOrders.add(btnNewButton_1);
 		
 		JButton btnNewButton_2 = new JButton("Void");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!table_1.getSelectionModel().isSelectionEmpty()) {
+					if(currUser.is_admin()) {
+						int remove = table_1.getSelectedRow();
+						// table_1 edit
+						DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+						model.removeRow(remove);
+						// removal of order from array
+						orders.remove(remove);
+						//table_2 edit
+						model = (DefaultTableModel) table_2.getModel();
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+						// reset fields
+						subtotalOrdersField.setText("0.00");
+						totalOrdersField.setText("0.00");
+						itemsOrdersField.setText("0");
+						table_1.getSelectionModel().clearSelection();
+						row = -1;
+						
+					}
+				}
+			}
+		});
 		btnNewButton_2.setBounds(589, 526, 89, 23);
 		panelOrders.add(btnNewButton_2);
 		
@@ -722,7 +775,7 @@ public class Window extends JFrame {
 				item = new Thuple<String,Integer,Float>(name,quantity,price);
 				items.add(item);
 			}
-			Order ordertemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser,time,items);
+			Order ordertemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser.return_username(),time,items);
 			orders.add(ordertemp);
 			add_to_order_table();
 		}
