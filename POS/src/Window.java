@@ -1,5 +1,4 @@
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -7,12 +6,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
-
 import java.awt.CardLayout;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollBar;
 import java.awt.event.ActionListener;
@@ -27,6 +26,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Image;
+import java.awt.Color;
 
 public class Window extends JFrame {
 
@@ -344,6 +345,7 @@ public class Window extends JFrame {
 		panelAppetizer.setLayout(null);
 		//Sushi Panel
 		panelSushi = new JPanel();
+		panelSushi.setForeground(new Color(0, 128, 128));
 		layeredItemPane.add(panelSushi, "name_255400090207500");
 		panelSushi.setLayout(null);
 		//Roll Panel
@@ -362,6 +364,8 @@ public class Window extends JFrame {
 		
 		//===============Drink Options===============
 		JButton asahiButton = new JButton("");
+		Image asahiImage = new ImageIcon(this.getClass().getResource("/asahi.jpg")).getImage();
+		asahiButton.setIcon(new ImageIcon(asahiImage));
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
@@ -375,6 +379,8 @@ public class Window extends JFrame {
 		
 		//===============Appetizer Options===============
 		JButton seafoodSpringRollsButton = new JButton("");
+		Image springrollImage = new ImageIcon(this.getClass().getResource("/springroll.jpg")).getImage();
+		seafoodSpringRollsButton.setIcon(new ImageIcon(springrollImage));
 		seafoodSpringRollsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
@@ -388,6 +394,8 @@ public class Window extends JFrame {
 		
 		//===============Sushi Options===============
 		JButton salmonSushiButton = new JButton("");
+		Image sushiImage = new ImageIcon(this.getClass().getResource("/sushi.png")).getImage();
+		salmonSushiButton.setIcon(new ImageIcon(sushiImage));
 		salmonSushiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
@@ -401,6 +409,8 @@ public class Window extends JFrame {
 		
 		//===============Roll Options===============
 		JButton blueOceanButton = new JButton("");
+		Image blueOceanImage = new ImageIcon(this.getClass().getResource("/blueOcean.jpg")).getImage();
+		blueOceanButton.setIcon(new ImageIcon(blueOceanImage));
 		blueOceanButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
@@ -414,6 +424,8 @@ public class Window extends JFrame {
 		
 		//===============Entree Options===============
 		JButton chickenKatsuButton = new JButton("");
+		Image katsuImage = new ImageIcon(this.getClass().getResource("/katsu.jpg")).getImage();
+		chickenKatsuButton.setIcon(new ImageIcon(katsuImage));
 		chickenKatsuButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
@@ -427,6 +439,8 @@ public class Window extends JFrame {
 		
 		//===============Desert Options===============
 		JButton carmelAppleButton = new JButton("");
+		Image appleImage = new ImageIcon(this.getClass().getResource("/apple.jpeg")).getImage();
+		carmelAppleButton.setIcon(new ImageIcon(appleImage));
 		carmelAppleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
