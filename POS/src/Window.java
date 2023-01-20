@@ -31,7 +31,7 @@ import java.awt.Color;
 import java.awt.Font;
 
 public class Window extends JFrame {
-
+	private JButton btn0,btn1,btn2,btn3,btn4,btn5,btn6,btn7,btn8,btn9,btnC,btnD,btnPay; // all the cash pay buttons
 	private JPanel contentPane;
 	private JPanel panelOrders;
 	private JTextField usernameField;
@@ -54,12 +54,13 @@ public class Window extends JFrame {
 	private JPanel panelEntree;
 	private JPanel panelDessert;
 	private JPanel panelPay;
-	private JPanel panelCash;
+	private JPanel panelCash,panelCard;
 	private JTable table;
+	private JButton btnPayCard;
 	NumberFormat number = NumberFormat.getInstance();			// for two decimal point for total
 	private ArrayList<Order>orders = new ArrayList<Order>();	// list for all orders
+	private Order currOrder;									// pointer to order that will be payed for
 	private JTable table_1;
-	//private String currUser;
 	private User currUser;
 	private JTextField subtotalOrdersField;
 	private JTextField totalOrdersField;
@@ -262,9 +263,9 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(table.getRowCount() != 0) {
 					prev_panel = panelMenu;
-					Order orderTemp = add_order();
+					currOrder = add_order();
 					clear_table(table,subtotalField,totalField,numItemField);
-					orderTemp.draw_orders((DefaultTableModel) table_3.getModel(),textField_3,textField_4,textField_5);
+					currOrder.draw_orders((DefaultTableModel) table_3.getModel(),textField_3,textField_4,textField_5);
 					switchMainPanel(panelPay);
 				}
 			}
@@ -550,17 +551,17 @@ public class Window extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"ID", "Total", "Time", "Server", "Paid"
+				"ID", "Total", "Time", "Server", "Paid", "Type"
 			}
 		) {
 			Class[] columnTypes = new Class[] {
-				Integer.class, Float.class, String.class, String.class, Boolean.class
+				Integer.class, Float.class, String.class, String.class, Boolean.class, String.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 			boolean[] columnEditables = new boolean[] {
-				false, false, false, false, false
+				false, false, false, false, false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -622,12 +623,12 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(!table_1.getSelectionModel().isSelectionEmpty()) {
 					prev_panel = panelOrders;
-					Order edit = orders.get(table_1.getSelectedRow());
+					currOrder = orders.get(table_1.getSelectedRow());
 					clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 					table_1.getSelectionModel().clearSelection();
 					row = -1;
 					
-					edit.draw_orders((DefaultTableModel) table_3.getModel(), textField_3, textField_4, textField_5);
+					currOrder.draw_orders((DefaultTableModel) table_3.getModel(), textField_3, textField_4, textField_5);
 					
 					switchMainPanel(panelPay);
 				}
@@ -734,6 +735,12 @@ public class Window extends JFrame {
 		JButton btnNewButton_3 = new JButton("CASH");
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(currOrder.return_paid()) {toggle_pay_cash(false);}
+				else{toggle_pay_cash(true);}
+				textField_1.setText(String.valueOf(currOrder.return_owed()));
+				if(currOrder.return_change() == null) {textField_2.setText("");}
+				else {textField_2.setText(number.format(currOrder.return_change()));}
+				textField.setText("-.--");
 				switch_panel(layeredPanePay,panelCash);
 			}
 		});
@@ -743,6 +750,9 @@ public class Window extends JFrame {
 		JButton btnNewButton_3_1 = new JButton("CARD");
 		btnNewButton_3_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(currOrder.return_paid()) {toggle_pay_card(false);}
+				else {toggle_pay_card(true);}
+				switch_panel(layeredPanePay,panelCard);
 			}
 		});
 		btnNewButton_3_1.setBounds(389, 192, 89, 89);
@@ -751,6 +761,7 @@ public class Window extends JFrame {
 		JButton btnNewButton_4 = new JButton("back");
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				currOrder = null;
 				clear_table(table_3,textField_3,textField_4,textField_5);
 				switchMainPanel(prev_panel);
 			}
@@ -762,125 +773,125 @@ public class Window extends JFrame {
 		layeredPanePay.add(panelCash, "name_30349975776200");
 		panelCash.setLayout(null);
 		
-		JButton btnNewButton_5 = new JButton("1");
-		btnNewButton_5.addActionListener(new ActionListener() {
+		btn1 = new JButton("1");
+		btn1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(1,false,false);
 			}
 		});
-		btnNewButton_5.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5.setBounds(27, 128, 89, 89);
-		panelCash.add(btnNewButton_5);
+		btn1.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn1.setBounds(27, 128, 89, 89);
+		panelCash.add(btn1);
 		
-		JButton btnNewButton_5_1 = new JButton("2");
-		btnNewButton_5_1.addActionListener(new ActionListener() {
+		btn2 = new JButton("2");
+		btn2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(2,false,false);
 			}
 		});
-		btnNewButton_5_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1.setBounds(126, 128, 89, 89);
-		panelCash.add(btnNewButton_5_1);
+		btn2.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn2.setBounds(126, 128, 89, 89);
+		panelCash.add(btn2);
 		
-		JButton btnNewButton_5_1_1 = new JButton("3");
-		btnNewButton_5_1_1.addActionListener(new ActionListener() {
+		btn3 = new JButton("3");
+		btn3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(3,false,false);
 			}
 		});
-		btnNewButton_5_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1.setBounds(225, 128, 89, 89);
-		panelCash.add(btnNewButton_5_1_1);
+		btn3.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn3.setBounds(225, 128, 89, 89);
+		panelCash.add(btn3);
 		
-		JButton btnNewButton_5_1_1_1 = new JButton("4");
-		btnNewButton_5_1_1_1.addActionListener(new ActionListener() {
+		btn4 = new JButton("4");
+		btn4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(4,false,false);
 			}
 		});
-		btnNewButton_5_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1.setBounds(27, 228, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1);
+		btn4.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn4.setBounds(27, 228, 89, 89);
+		panelCash.add(btn4);
 		
-		JButton btnNewButton_5_1_1_1_1 = new JButton("5");
-		btnNewButton_5_1_1_1_1.addActionListener(new ActionListener() {
+		btn5 = new JButton("5");
+		btn5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(5,false,false);
 			}
 		});
-		btnNewButton_5_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1.setBounds(126, 228, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1);
+		btn5.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn5.setBounds(126, 228, 89, 89);
+		panelCash.add(btn5);
 		
-		JButton btnNewButton_5_1_1_1_1_1 = new JButton("6");
-		btnNewButton_5_1_1_1_1_1.addActionListener(new ActionListener() {
+		btn6 = new JButton("6");
+		btn6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(6,false,false);
 			}
 		});
-		btnNewButton_5_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1_1.setBounds(225, 228, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1_1);
+		btn6.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn6.setBounds(225, 228, 89, 89);
+		panelCash.add(btn6);
 		
-		JButton btnNewButton_5_1_1_1_1_1_1 = new JButton("8");
-		btnNewButton_5_1_1_1_1_1_1.addActionListener(new ActionListener() {
+		btn8 = new JButton("8");
+		btn8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(8,false,false);
 			}
 		});
-		btnNewButton_5_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1_1_1.setBounds(126, 328, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1_1_1);
+		btn8.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn8.setBounds(126, 328, 89, 89);
+		panelCash.add(btn8);
 		
-		JButton btnNewButton_5_1_1_1_1_1_1_1 = new JButton("7");
-		btnNewButton_5_1_1_1_1_1_1_1.addActionListener(new ActionListener() {
+		btn7 = new JButton("7");
+		btn7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(7,false,false);
 			}
 		});
-		btnNewButton_5_1_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1_1_1_1.setBounds(27, 328, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1_1_1_1);
+		btn7.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn7.setBounds(27, 328, 89, 89);
+		panelCash.add(btn7);
 		
-		JButton btnNewButton_5_1_1_1_1_1_1_1_1 = new JButton("9");
-		btnNewButton_5_1_1_1_1_1_1_1_1.addActionListener(new ActionListener() {
+		btn9 = new JButton("9");
+		btn9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(9,false,false);
 			}
 		});
-		btnNewButton_5_1_1_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1_1_1_1_1.setBounds(225, 328, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1_1_1_1_1);
+		btn9.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn9.setBounds(225, 328, 89, 89);
+		panelCash.add(btn9);
 		
-		JButton btnNewButton_5_1_1_1_1_1_1_2 = new JButton("0");
-		btnNewButton_5_1_1_1_1_1_1_2.addActionListener(new ActionListener() {
+		btn0 = new JButton("0");
+		btn0.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(0,false,false);
 			}
 		});
-		btnNewButton_5_1_1_1_1_1_1_2.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1_1_1_2.setBounds(126, 428, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1_1_1_2);
+		btn0.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn0.setBounds(126, 428, 89, 89);
+		panelCash.add(btn0);
 		
-		JButton btnNewButton_5_1_1_1_1_1_1_2_1 = new JButton("C");
-		btnNewButton_5_1_1_1_1_1_1_2_1.addActionListener(new ActionListener() {
+		btnC = new JButton("C");
+		btnC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(-1,true,false);
 			}
 		});
-		btnNewButton_5_1_1_1_1_1_1_2_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1_1_1_2_1.setBounds(27, 428, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1_1_1_2_1);
+		btnC.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btnC.setBounds(27, 428, 89, 89);
+		panelCash.add(btnC);
 		
-		JButton btnNewButton_5_1_1_1_1_1_1_2_1_1 = new JButton("DEL");
-		btnNewButton_5_1_1_1_1_1_1_2_1_1.addActionListener(new ActionListener() {
+		btnD = new JButton("DEL");
+		btnD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				num_input(-1,false,true);
 			}
 		});
-		btnNewButton_5_1_1_1_1_1_1_2_1_1.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		btnNewButton_5_1_1_1_1_1_1_2_1_1.setBounds(225, 428, 89, 89);
-		panelCash.add(btnNewButton_5_1_1_1_1_1_1_2_1_1);
+		btnD.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btnD.setBounds(225, 428, 89, 89);
+		panelCash.add(btnD);
 		
 		textField = new JTextField();
 		textField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -894,15 +905,22 @@ public class Window extends JFrame {
 		JButton btnNewButton_6 = new JButton("Back");
 		btnNewButton_6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				textField.setText("-.--");
+				placeholder = 0; 
 				switch_panel(layeredPanePay,panelPayOption);
 			}
 		});
 		btnNewButton_6.setBounds(10, 546, 89, 23);
 		panelCash.add(btnNewButton_6);
 		
-		JButton btnNewButton_7 = new JButton("Pay");
-		btnNewButton_7.setBounds(479, 546, 89, 23);
-		panelCash.add(btnNewButton_7);
+		btnPay = new JButton("Pay");
+		btnPay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pay_cash();
+			}
+		});
+		btnPay.setBounds(479, 546, 89, 23);
+		panelCash.add(btnPay);
 		
 		JLabel lblNewLabel_10 = new JLabel("Amount Owed:");
 		lblNewLabel_10.setBounds(350, 173, 75, 14);
@@ -924,17 +942,28 @@ public class Window extends JFrame {
 		textField_2.setBounds(435, 270, 111, 20);
 		panelCash.add(textField_2);
 		
-		JPanel panelCard = new JPanel();
+		panelCard = new JPanel();
 		layeredPanePay.add(panelCard, "name_30377410911500");
 		panelCard.setLayout(null);
 		
 		JButton btnNewButton_8 = new JButton("Back");
+		btnNewButton_8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switch_panel(layeredPanePay,panelPayOption);
+			}
+		});
 		btnNewButton_8.setBounds(10, 546, 89, 23);
 		panelCard.add(btnNewButton_8);
 		
-		JButton btnNewButton_9 = new JButton("Pay");
-		btnNewButton_9.setBounds(479, 546, 89, 23);
-		panelCard.add(btnNewButton_9);
+		btnPayCard = new JButton("Pay");
+		btnPayCard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currOrder.pay_card();
+				toggle_pay_card(false);
+			}
+		});
+		btnPayCard.setBounds(479, 546, 89, 23);
+		panelCard.add(btnPayCard);
 		
 		JLabel lblNewLabel_12 = new JLabel("Sub-Total:");
 		lblNewLabel_12.setBounds(610, 489, 58, 14);
@@ -1120,7 +1149,6 @@ public class Window extends JFrame {
 				text = addChar(text,'.',text.length()-2);
 			}
 			else {
-				//text = replaceChar(text,(char)(num+'0'),(text.length()-1)-placeholder);
 				text = text.replace(".","");
 				text = text.replace("-","");
 				text = text.concat(String.valueOf(num));
@@ -1164,5 +1192,42 @@ public class Window extends JFrame {
 			else {placeholder--;}
 		}
 		textField.setText(text);
+	}
+	
+	public void pay_cash() {
+		Float change = currOrder.pay_cash(Float.valueOf(textField.getText().replace("-","0")));
+		if(change != null) {
+			textField_1.setText("0.00");
+			textField_2.setText(number.format((change)));
+			toggle_pay_cash(false);
+			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+			model.setValueAt(true,orders.indexOf(currOrder),4);
+			model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Invalid Amount","ERROR",JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	
+	void toggle_pay_cash(boolean mode) {
+		btn0.setEnabled(mode);
+		btn1.setEnabled(mode);
+		btn2.setEnabled(mode);
+		btn3.setEnabled(mode);
+		btn4.setEnabled(mode);
+		btn5.setEnabled(mode);
+		btn6.setEnabled(mode);
+		btn7.setEnabled(mode);
+		btn8.setEnabled(mode);
+		btn9.setEnabled(mode);
+		btnC.setEnabled(mode);
+		btnD.setEnabled(mode);
+		btnPay.setEnabled(mode);
+	}
+	void toggle_pay_card(boolean mode) {
+		btnPayCard.setEnabled(mode);
+		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+		model.setValueAt(true,orders.indexOf(currOrder),4);
+		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
 	}
 }
