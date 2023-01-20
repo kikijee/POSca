@@ -28,9 +28,10 @@ import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Font;
 
 public class Window extends JFrame {
-
+	private JButton btn0,btn1,btn2,btn3,btn4,btn5,btn6,btn7,btn8,btn9,btnC,btnD,btnPay; // all the cash pay buttons
 	private JPanel contentPane;
 	private JPanel panelOrders;
 	private JTextField usernameField;
@@ -52,18 +53,30 @@ public class Window extends JFrame {
 	private JPanel panelRoll;
 	private JPanel panelEntree;
 	private JPanel panelDessert;
+	private JPanel panelPay;
+	private JPanel panelCash,panelCard;
 	private JTable table;
+	private JButton btnPayCard;
 	NumberFormat number = NumberFormat.getInstance();			// for two decimal point for total
 	private ArrayList<Order>orders = new ArrayList<Order>();	// list for all orders
+	private Order currOrder;									// pointer to order that will be payed for
 	private JTable table_1;
-	//private String currUser;
 	private User currUser;
 	private JTextField subtotalOrdersField;
 	private JTextField totalOrdersField;
 	private JTextField itemsOrdersField;
 	private JTable table_2;
 	private int row = -1;
-
+	private int placeholder = 0;
+	private JTable table_3;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JPanel prev_panel;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -235,7 +248,10 @@ public class Window extends JFrame {
 		JButton sendButton = new JButton("Send");
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				add_order();
+				if(table.getRowCount() != 0) {
+					add_order();
+					clear_table(table,subtotalField,totalField,numItemField);
+				}
 			}
 		});
 		
@@ -245,7 +261,13 @@ public class Window extends JFrame {
 		JButton sendPayButton = new JButton("Send & Pay");
 		sendPayButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				print_orders();
+				if(table.getRowCount() != 0) {
+					prev_panel = panelMenu;
+					currOrder = add_order();
+					clear_table(table,subtotalField,totalField,numItemField);
+					currOrder.draw_orders((DefaultTableModel) table_3.getModel(),textField_3,textField_4,textField_5);
+					switchMainPanel(panelPay);
+				}
 			}
 		});
 		sendPayButton.setBounds(848, 568, 89, 23);
@@ -263,9 +285,7 @@ public class Window extends JFrame {
 		JButton orderBackButton = new JButton("Back");
 		orderBackButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.getDataVector().removeAllElements();
-				model.fireTableDataChanged();
+				clear_table(table,subtotalField,totalField,numItemField);
 				switchMainPanel(panelMenu);
 			}
 		});
@@ -531,17 +551,17 @@ public class Window extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"ID", "Total", "Time", "Server", "Paid"
+				"ID", "Total", "Time", "Server", "Paid", "Type"
 			}
 		) {
 			Class[] columnTypes = new Class[] {
-				Integer.class, Float.class, String.class, String.class, Boolean.class
+				Integer.class, Float.class, String.class, String.class, Boolean.class, String.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 			boolean[] columnEditables = new boolean[] {
-				false, false, false, false, false
+				false, false, false, false, false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -589,13 +609,8 @@ public class Window extends JFrame {
 		JButton btnNewButton = new JButton("Back");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DefaultTableModel model = (DefaultTableModel) table_2.getModel();
-				model.getDataVector().removeAllElements();
-				model.fireTableDataChanged();
+				clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 				table_1.getSelectionModel().clearSelection();
-				subtotalOrdersField.setText("0.00");
-				totalOrdersField.setText("0.00");
-				itemsOrdersField.setText("0");
 				switchMainPanel(panelMenu);
 				row = -1;
 			}
@@ -603,22 +618,19 @@ public class Window extends JFrame {
 		btnNewButton.setBounds(589, 568, 89, 23);
 		panelOrders.add(btnNewButton);
 		
-		JButton btnNewButton_1 = new JButton("Edit");
+		JButton btnNewButton_1 = new JButton("Pay");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!table_1.getSelectionModel().isSelectionEmpty()) {
-					Order edit = orders.get(table_1.getSelectedRow());
-					DefaultTableModel model = (DefaultTableModel) table_2.getModel();
-					model.getDataVector().removeAllElements();
-					model.fireTableDataChanged();
+					prev_panel = panelOrders;
+					currOrder = orders.get(table_1.getSelectedRow());
+					clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 					table_1.getSelectionModel().clearSelection();
-					subtotalOrdersField.setText("0.00");
-					totalOrdersField.setText("0.00");
-					itemsOrdersField.setText("0");
 					row = -1;
 					
-					edit.draw_orders((DefaultTableModel) table.getModel(), subtotalField, totalField, numItemField);
-					switchMainPanel(panelMakeOrder);
+					currOrder.draw_orders((DefaultTableModel) table_3.getModel(), textField_3, textField_4, textField_5);
+					
+					switchMainPanel(panelPay);
 				}
 			}
 		});
@@ -636,14 +648,7 @@ public class Window extends JFrame {
 						model.removeRow(remove);
 						// removal of order from array
 						orders.remove(remove);
-						//table_2 edit
-						model = (DefaultTableModel) table_2.getModel();
-						model.getDataVector().removeAllElements();
-						model.fireTableDataChanged();
-						// reset fields
-						subtotalOrdersField.setText("0.00");
-						totalOrdersField.setText("0.00");
-						itemsOrdersField.setText("0");
+						clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 						table_1.getSelectionModel().clearSelection();
 						row = -1;
 						
@@ -686,6 +691,312 @@ public class Window extends JFrame {
 		itemsOrdersField.setColumns(10);
 		itemsOrdersField.setBounds(770, 569, 86, 20);
 		panelOrders.add(itemsOrdersField);
+		
+		panelPay = new JPanel();
+		layeredMainPane.add(panelPay, "name_29246515247100");
+		panelPay.setLayout(null);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(600, 11, 354, 467);
+		panelPay.add(scrollPane_1);
+		
+		table_3 = new JTable();
+		table_3.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Item", "Quantity", "Price"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, Integer.class, Float.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		scrollPane_1.setViewportView(table_3);
+		
+		JLayeredPane layeredPanePay = new JLayeredPane();
+		layeredPanePay.setBounds(10, 11, 578, 580);
+		panelPay.add(layeredPanePay);
+		layeredPanePay.setLayout(new CardLayout(0, 0));
+		
+		JPanel panelPayOption = new JPanel();
+		layeredPanePay.add(panelPayOption, "name_29905756660300");
+		panelPayOption.setLayout(null);
+		
+		JButton btnNewButton_3 = new JButton("CASH");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(currOrder.return_paid()) {toggle_pay_cash(false);}
+				else{toggle_pay_cash(true);}
+				textField_1.setText(String.valueOf(currOrder.return_owed()));
+				if(currOrder.return_change() == null) {textField_2.setText("");}
+				else {textField_2.setText(number.format(currOrder.return_change()));}
+				textField.setText("-.--");
+				switch_panel(layeredPanePay,panelCash);
+			}
+		});
+		btnNewButton_3.setBounds(105, 192, 89, 89);
+		panelPayOption.add(btnNewButton_3);
+		
+		JButton btnNewButton_3_1 = new JButton("CARD");
+		btnNewButton_3_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(currOrder.return_paid()) {toggle_pay_card(false);}
+				else {toggle_pay_card(true);}
+				switch_panel(layeredPanePay,panelCard);
+			}
+		});
+		btnNewButton_3_1.setBounds(389, 192, 89, 89);
+		panelPayOption.add(btnNewButton_3_1);
+		
+		JButton btnNewButton_4 = new JButton("back");
+		btnNewButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currOrder = null;
+				clear_table(table_3,textField_3,textField_4,textField_5);
+				switchMainPanel(prev_panel);
+			}
+		});
+		btnNewButton_4.setBounds(10, 546, 89, 23);
+		panelPayOption.add(btnNewButton_4);
+		
+		panelCash = new JPanel();
+		layeredPanePay.add(panelCash, "name_30349975776200");
+		panelCash.setLayout(null);
+		
+		btn1 = new JButton("1");
+		btn1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(1,false,false);
+			}
+		});
+		btn1.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn1.setBounds(27, 128, 89, 89);
+		panelCash.add(btn1);
+		
+		btn2 = new JButton("2");
+		btn2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(2,false,false);
+			}
+		});
+		btn2.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn2.setBounds(126, 128, 89, 89);
+		panelCash.add(btn2);
+		
+		btn3 = new JButton("3");
+		btn3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(3,false,false);
+			}
+		});
+		btn3.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn3.setBounds(225, 128, 89, 89);
+		panelCash.add(btn3);
+		
+		btn4 = new JButton("4");
+		btn4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(4,false,false);
+			}
+		});
+		btn4.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn4.setBounds(27, 228, 89, 89);
+		panelCash.add(btn4);
+		
+		btn5 = new JButton("5");
+		btn5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(5,false,false);
+			}
+		});
+		btn5.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn5.setBounds(126, 228, 89, 89);
+		panelCash.add(btn5);
+		
+		btn6 = new JButton("6");
+		btn6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(6,false,false);
+			}
+		});
+		btn6.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn6.setBounds(225, 228, 89, 89);
+		panelCash.add(btn6);
+		
+		btn8 = new JButton("8");
+		btn8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(8,false,false);
+			}
+		});
+		btn8.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn8.setBounds(126, 328, 89, 89);
+		panelCash.add(btn8);
+		
+		btn7 = new JButton("7");
+		btn7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(7,false,false);
+			}
+		});
+		btn7.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn7.setBounds(27, 328, 89, 89);
+		panelCash.add(btn7);
+		
+		btn9 = new JButton("9");
+		btn9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(9,false,false);
+			}
+		});
+		btn9.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn9.setBounds(225, 328, 89, 89);
+		panelCash.add(btn9);
+		
+		btn0 = new JButton("0");
+		btn0.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(0,false,false);
+			}
+		});
+		btn0.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btn0.setBounds(126, 428, 89, 89);
+		panelCash.add(btn0);
+		
+		btnC = new JButton("C");
+		btnC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(-1,true,false);
+			}
+		});
+		btnC.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btnC.setBounds(27, 428, 89, 89);
+		panelCash.add(btnC);
+		
+		btnD = new JButton("DEL");
+		btnD.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				num_input(-1,false,true);
+			}
+		});
+		btnD.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btnD.setBounds(225, 428, 89, 89);
+		panelCash.add(btnD);
+		
+		textField = new JTextField();
+		textField.setHorizontalAlignment(SwingConstants.CENTER);
+		textField.setText("-.--");
+		textField.setEditable(false);
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		textField.setBounds(10, 11, 325, 89);
+		panelCash.add(textField);
+		textField.setColumns(10);
+		
+		JButton btnNewButton_6 = new JButton("Back");
+		btnNewButton_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textField.setText("-.--");
+				placeholder = 0; 
+				switch_panel(layeredPanePay,panelPayOption);
+			}
+		});
+		btnNewButton_6.setBounds(10, 546, 89, 23);
+		panelCash.add(btnNewButton_6);
+		
+		btnPay = new JButton("Pay");
+		btnPay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pay_cash();
+			}
+		});
+		btnPay.setBounds(479, 546, 89, 23);
+		panelCash.add(btnPay);
+		
+		JLabel lblNewLabel_10 = new JLabel("Amount Owed:");
+		lblNewLabel_10.setBounds(350, 173, 75, 14);
+		panelCash.add(lblNewLabel_10);
+		
+		JLabel lblNewLabel_11 = new JLabel("Change:");
+		lblNewLabel_11.setBounds(350, 273, 46, 14);
+		panelCash.add(lblNewLabel_11);
+		
+		textField_1 = new JTextField();
+		textField_1.setEditable(false);
+		textField_1.setBounds(435, 170, 111, 20);
+		panelCash.add(textField_1);
+		textField_1.setColumns(10);
+		
+		textField_2 = new JTextField();
+		textField_2.setEditable(false);
+		textField_2.setColumns(10);
+		textField_2.setBounds(435, 270, 111, 20);
+		panelCash.add(textField_2);
+		
+		panelCard = new JPanel();
+		layeredPanePay.add(panelCard, "name_30377410911500");
+		panelCard.setLayout(null);
+		
+		JButton btnNewButton_8 = new JButton("Back");
+		btnNewButton_8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switch_panel(layeredPanePay,panelPayOption);
+			}
+		});
+		btnNewButton_8.setBounds(10, 546, 89, 23);
+		panelCard.add(btnNewButton_8);
+		
+		btnPayCard = new JButton("Pay");
+		btnPayCard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currOrder.pay_card();
+				toggle_pay_card(false);
+			}
+		});
+		btnPayCard.setBounds(479, 546, 89, 23);
+		panelCard.add(btnPayCard);
+		
+		JLabel lblNewLabel_12 = new JLabel("Sub-Total:");
+		lblNewLabel_12.setBounds(610, 489, 58, 14);
+		panelPay.add(lblNewLabel_12);
+		
+		JLabel lblNewLabel_12_1 = new JLabel("Total:");
+		lblNewLabel_12_1.setBounds(610, 514, 58, 14);
+		panelPay.add(lblNewLabel_12_1);
+		
+		JLabel lblNewLabel_12_1_1 = new JLabel("# Items:");
+		lblNewLabel_12_1_1.setBounds(610, 541, 58, 14);
+		panelPay.add(lblNewLabel_12_1_1);
+		
+		textField_3 = new JTextField();
+		textField_3.setText("0.00");
+		textField_3.setEditable(false);
+		textField_3.setBounds(670, 486, 127, 20);
+		panelPay.add(textField_3);
+		textField_3.setColumns(10);
+		
+		textField_4 = new JTextField();
+		textField_4.setText("0.00");
+		textField_4.setEditable(false);
+		textField_4.setColumns(10);
+		textField_4.setBounds(670, 511, 127, 20);
+		panelPay.add(textField_4);
+		
+		textField_5 = new JTextField();
+		textField_5.setText("0");
+		textField_5.setEditable(false);
+		textField_5.setColumns(10);
+		textField_5.setBounds(670, 538, 127, 20);
+		panelPay.add(textField_5);
 		//=============================================
 		
 		
@@ -704,6 +1015,13 @@ public class Window extends JFrame {
 		layeredItemPane.add(panel);
 		layeredItemPane.repaint();
 		layeredItemPane.revalidate();
+	}
+	
+	public void switch_panel(JLayeredPane layeredPanel, JPanel panel) {
+		layeredPanel.removeAll();
+		layeredPanel.add(panel);
+		layeredPanel.repaint();
+		layeredPanel.revalidate();
 	}
 	
 	public void add_to_table(Tuple<String,Float>tuple) {	// adding item to table (Tuple object has item name and price)
@@ -770,12 +1088,10 @@ public class Window extends JFrame {
 		}
 	}
 	
-	public void add_order() { // will add order to orders ArrayList
+	public Order add_order() { // will add order to orders ArrayList
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		Calendar date = Calendar.getInstance();
 		String time = String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
-		//System.out.println(time);
-		
 		if(model.getRowCount() != 0) {
 			ArrayList<Thuple<String,Integer,Float>>items = new ArrayList<Thuple<String,Integer,Float>>();
 			Thuple<String,Integer,Float> item;
@@ -789,15 +1105,13 @@ public class Window extends JFrame {
 				item = new Thuple<String,Integer,Float>(name,quantity,price);
 				items.add(item);
 			}
-			Order ordertemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser.return_username(),time,items);
-			orders.add(ordertemp);
+			Order orderTemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser.return_username(),time,items);
+			orders.add(orderTemp);
 			add_to_order_table();
+			return orderTemp;
 		}
-		model.getDataVector().removeAllElements();
-		model.fireTableDataChanged();
-		subtotalField.setText("0.00");
-		totalField.setText("0.00");
-		numItemField.setText("0");
+		clear_table(table,subtotalField,totalField,numItemField);
+		return null;
 	}
 	
 	public void print_orders() {
@@ -806,4 +1120,114 @@ public class Window extends JFrame {
 		}
 	}
 	
+	public void clear_table(JTable table, JTextField sub, JTextField tot, JTextField it) {
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.getDataVector().removeAllElements();
+		model.fireTableDataChanged();
+		sub.setText("0.00");
+		tot.setText("0.00");
+		it.setText("0");
+	}
+	
+	public String addChar(String str, char ch, int position) {
+	    return str.substring(0, position) + ch + str.substring(position);
+	}
+	
+	public String replaceChar(String str, char ch, int index) {
+		str = str.substring(0, index) + ch
+	              + str.substring(index + 1);
+		return str;
+	}
+	
+	public void num_input(int num, boolean clear, boolean back) {
+		if(placeholder == 2) {placeholder++;}
+		String text = textField.getText();
+		if(num != -1) {
+			if(placeholder > 3) {
+				text = text.replace(".", "");
+				text = text.concat(String.valueOf(num));
+				text = addChar(text,'.',text.length()-2);
+			}
+			else {
+				text = text.replace(".","");
+				text = text.replace("-","");
+				text = text.concat(String.valueOf(num));
+				if(text.length() == 1) {
+					text = "-.-"+text;
+				}
+				else if(text.length() == 2) {
+					text = "-."+text;
+				}
+				else {
+					text = addChar(text,'.',1);
+				}
+			}
+			placeholder++;
+		}
+		else if(clear) {
+			if(placeholder == 0) {return;}
+			else {
+				placeholder = 0;
+				textField.setText("-.--");
+				return;
+			}
+		}
+		else if(back){
+			if(placeholder == 0) {return;}
+			else {
+				text = text.replace(".","");
+				if(placeholder == 1) {
+					text = "-.--";
+				}
+				else if(placeholder == 3 || placeholder == 4) {
+					text = text.substring(0,text.length()-1);
+					text = "-."+text;
+				}
+				else {
+					text = text.substring(0,text.length()-1);
+					text = addChar(text,'.',text.length()-2);
+				}
+			}
+			if(placeholder == 3) {placeholder = 1;}
+			else {placeholder--;}
+		}
+		textField.setText(text);
+	}
+	
+	public void pay_cash() {
+		Float change = currOrder.pay_cash(Float.valueOf(textField.getText().replace("-","0")));
+		if(change != null) {
+			textField_1.setText("0.00");
+			textField_2.setText(number.format((change)));
+			toggle_pay_cash(false);
+			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+			model.setValueAt(true,orders.indexOf(currOrder),4);
+			model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Invalid Amount","ERROR",JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	
+	void toggle_pay_cash(boolean mode) {
+		btn0.setEnabled(mode);
+		btn1.setEnabled(mode);
+		btn2.setEnabled(mode);
+		btn3.setEnabled(mode);
+		btn4.setEnabled(mode);
+		btn5.setEnabled(mode);
+		btn6.setEnabled(mode);
+		btn7.setEnabled(mode);
+		btn8.setEnabled(mode);
+		btn9.setEnabled(mode);
+		btnC.setEnabled(mode);
+		btnD.setEnabled(mode);
+		btnPay.setEnabled(mode);
+	}
+	void toggle_pay_card(boolean mode) {
+		btnPayCard.setEnabled(mode);
+		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+		model.setValueAt(true,orders.indexOf(currOrder),4);
+		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
+	}
 }
