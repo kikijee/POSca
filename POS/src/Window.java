@@ -386,11 +386,12 @@ public class Window extends JFrame {
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				add_to_table(itemsObj.return_item_data(e.getSource()));
+				System.out.println(itemsObj.print_itemNo(e.getSource()));
 			}
 		});
 		asahiButton.setBounds(10, 11, 100, 100);
 		panelDrink.add(asahiButton);
-		itemsObj.add_item(asahiButton,4.99F,"Asahi");
+		itemsObj.add_item(asahiButton,4.99F,"Asahi", 001);
 		//===========================================
 		
 		//===============Appetizer Options===============
@@ -404,7 +405,7 @@ public class Window extends JFrame {
 		});
 		seafoodSpringRollsButton.setBounds(10, 11, 100, 100);
 		panelAppetizer.add(seafoodSpringRollsButton);
-		itemsObj.add_item(seafoodSpringRollsButton,5.99F,"Seafood Spring Rolls");
+		itemsObj.add_item(seafoodSpringRollsButton,5.99F,"Seafood Spring Rolls", 002);
 		//===============================================
 		
 		//===============Sushi Options===============
@@ -418,7 +419,7 @@ public class Window extends JFrame {
 		});
 		salmonSushiButton.setBounds(10, 11, 100, 100);
 		panelSushi.add(salmonSushiButton);
-		itemsObj.add_item(salmonSushiButton,6.99F,"Salmon Sushi");
+		itemsObj.add_item(salmonSushiButton,6.99F,"Salmon Sushi", 003);
 		//===========================================
 		
 		//===============Roll Options===============
@@ -432,7 +433,7 @@ public class Window extends JFrame {
 		});
 		blueOceanButton.setBounds(10, 11, 100, 100);
 		panelRoll.add(blueOceanButton);
-		itemsObj.add_item(blueOceanButton,19.99F,"Blue Ocean Roll");
+		itemsObj.add_item(blueOceanButton,19.99F,"Blue Ocean Roll", 004);
 		//==========================================
 		
 		//===============Entree Options===============
@@ -446,7 +447,7 @@ public class Window extends JFrame {
 		});
 		chickenKatsuButton.setBounds(10, 11, 100, 100);
 		panelEntree.add(chickenKatsuButton);
-		itemsObj.add_item(chickenKatsuButton,21.99F,"Chicken Katsu Entree");
+		itemsObj.add_item(chickenKatsuButton,21.99F,"Chicken Katsu Entree", 005);
 		//============================================
 		
 		//===============Desert Options===============
@@ -460,7 +461,7 @@ public class Window extends JFrame {
 		});
 		carmelAppleButton.setBounds(10, 11, 100, 100);
 		panelDessert.add(carmelAppleButton);
-		itemsObj.add_item(carmelAppleButton,4.99F,"Carmel Apple");
+		itemsObj.add_item(carmelAppleButton,4.99F,"Carmel Apple", 006);
 		//============================================
 		
 		//=================Item Labels=================
@@ -1000,17 +1001,17 @@ public class Window extends JFrame {
 		layeredPanel.revalidate();
 	}
 	
-	public void add_to_table(Tuple<String,Float>tuple) {	// adding item to table (Tuple object has item name and price)
-		int check = if_exist(tuple.x);	// checking if item exists already
+	public void add_to_table(Thuple<String,Float, Integer>thuple) {	// adding item to table (Tuple object has item name and price)
+		int check = if_exist(thuple.x);	// checking if item exists already
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(check != -1) {
 			model.setValueAt(Integer.valueOf(model.getValueAt(check,1).toString())+Integer.valueOf(1),check,1);
-			model.setValueAt(Float.parseFloat(model.getValueAt(check,2).toString())+tuple.y,check,2);
+			model.setValueAt(Float.parseFloat(model.getValueAt(check,2).toString())+thuple.y,check,2);
 		}
 		else {
-			model.addRow(new Object[] {tuple.x,1,tuple.y});
+			model.addRow(new Object[] {thuple.x,1,thuple.y, thuple.z});
 		}
-		update_price(tuple.y);
+		update_price(thuple.y);
 	}
 	
 	public void add_to_order_table() {
