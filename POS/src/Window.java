@@ -32,54 +32,31 @@ import java.awt.Font;
 
 public class Window extends JFrame {
 	private JButton btn0,btn1,btn2,btn3,btn4,btn5,btn6,btn7,btn8,btn9,btnC,btnD,btnPay; // all the cash pay buttons
-	private JPanel contentPane;
-	private JPanel panelOrders;
+	private JPanel contentPane; // main panel
 	private JTextField usernameField;
 	private JPasswordField passwordField;
-	private JLayeredPane layeredMainPane;
-	private JPanel panelLogin;
-	private JPanel panelMenu;
-	private IDandPassword logObj;
-	private Items itemsObj;
-	private JTextField subtotalField;
-	private JTextField totalField;
-	private JTextField numItemField;
-	private JTextField orderNumField;
-	private JPanel panelMakeOrder;
-	private JLayeredPane layeredItemPane;
-	private JPanel panelDrink;
-	private JPanel panelAppetizer;
-	private JPanel panelSushi;
-	private JPanel panelRoll;
-	private JPanel panelEntree;
-	private JPanel panelDessert;
-	private JPanel panelPay;
-	private JPanel panelCash,panelCard;
-	private JTable table;
+	private JLayeredPane layeredMainPane,layeredItemPane;	
+	private JPanel panelLogin,panelMenu,panelMakeOrder,panelOrders; // sub panels of the content pane
+	private JTextField subtotalField,totalField,numItemField; 		// text fields in the make order panel
+	private JPanel panelDrink,panelAppetizer,panelSushi,panelRoll,panelEntree,panelDessert,panelPay; // all food category panels
+	private JPanel panelCash,panelCard;				// pay option panels
+	private JTable table,table_1,table_2,table_3;	// all table objects
 	private JButton btnPayCard;
-	NumberFormat number = NumberFormat.getInstance();			// for two decimal point for total
-	private ArrayList<Order>orders = new ArrayList<Order>();	// list for all orders
-	private Order currOrder;									// pointer to order that will be payed for
-	private JTable table_1;
-	private User currUser;
-	private JTextField subtotalOrdersField;
-	private JTextField totalOrdersField;
-	private JTextField itemsOrdersField;
-	private JTable table_2;
-	private int row = -1;
-	private int placeholder = 0;
-	private JTable table_3;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JPanel prev_panel;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
+	private JTextField subtotalOrdersField,totalOrdersField,itemsOrdersField;	// text fields for panelOrders
+	private JTextField textField,textField_1,textField_2;		// text fields for panelCash
+	private JTextField textField_3,textField_4,textField_5;		// text fields for panelPay
 	
-	/**
-	 * Launch the application.
-	 */
+	NumberFormat number = NumberFormat.getInstance();			// for two decimal point for total (String type)
+	private ArrayList<Order>orders = new ArrayList<Order>();	// list for all orders
+	private Order currOrder;		// pointer to order that will be processed
+	private JPanel prev_panel;		// pointer to prev panel;
+	private Items itemsObj;			// items object that holds all items
+	private User currUser;			// pointer to user object that is currently logged in
+	private IDandPassword logObj;	// object that holds all the users
+	private int row = -1;			// placeholder for row selection (utility for order selection on the table in the panelOrders)
+	private int placeholder = 0;	// placeholder int value (utility for the cash input functionality)
+	
+	// main function
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -97,30 +74,65 @@ public class Window extends JFrame {
 	 * Create the frame.
 	 */
 	public Window() {
-		number.setMaximumFractionDigits(2);
-		setVisible(true);
-		// setting window and contentPane settings 
-		logObj = new IDandPassword();
-		itemsObj = new Items();
+		number.setMaximumFractionDigits(2);	// for Float to String conversion 2 decimal point precision 
+		logObj = new IDandPassword();		// login object holding all user info (MAY CHANGE FOR THE DATABASE)
+		itemsObj = new Items();				// item object creation (MAY CHANGE FOR THE DATABASE)
 		
+		//=================START DEFUALT WINDOW SETTINGS=================
+		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1000, 650);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		this.setResizable(false);
+		//===============================================================
 		
+		//==================ALL LAYERED PANELS==================
 		layeredMainPane = new JLayeredPane();
 		layeredMainPane.setBounds(10, 11, 964, 602);
 		contentPane.add(layeredMainPane);
 		layeredMainPane.setLayout(new CardLayout(0, 0));
 		
+		layeredItemPane = new JLayeredPane();
+		layeredItemPane.setBounds(117, 11, 582, 591);
+		layeredItemPane.setLayout(new CardLayout(0, 0));
+		
+		JLayeredPane layeredPanePay = new JLayeredPane();
+		layeredPanePay.setBounds(10, 11, 578, 580);
+		layeredPanePay.setLayout(new CardLayout(0, 0));
+		//======================================================
+		
+		//==================ALL MAIN PANELS==================
 		panelLogin = new JPanel();
 		layeredMainPane.add(panelLogin, "name_226065968568000");
 		panelLogin.setLayout(null);
 		
+		panelMenu = new JPanel();
+		layeredMainPane.add(panelMenu, "name_226113370985000");
+		panelMenu.setLayout(null);
+		
+		panelMakeOrder = new JPanel();
+		layeredMainPane.add(panelMakeOrder, "name_247097960798500");
+		panelMakeOrder.setLayout(null);
+		
+		panelOrders = new JPanel();
+		layeredMainPane.add(panelOrders, "name_71322738432400");
+		panelOrders.setLayout(null);
+		
+		panelPay = new JPanel();
+		layeredMainPane.add(panelPay, "name_29246515247100");
+		panelPay.setLayout(null);
+		
+		JPanel panelPayOption = new JPanel();
+		layeredPanePay.add(panelPayOption, "name_29905756660300");
+		panelPayOption.setLayout(null);
+		//===================================================
+		panelMakeOrder.add(layeredItemPane);
+		panelPay.add(layeredPanePay);
+		
+		//=================START LOGIN OBJECT CREATION AND FUNCTIONALITY=================
 		usernameField = new JTextField();
 		usernameField.setText("");
 		usernameField.setBounds(370, 190, 164, 20);
@@ -163,11 +175,9 @@ public class Window extends JFrame {
 		});
 		loginButton.setBounds(445, 318, 89, 23);
 		panelLogin.add(loginButton);
+		//===============================================================================
 		
-		panelMenu = new JPanel();
-		layeredMainPane.add(panelMenu, "name_226113370985000");
-		panelMenu.setLayout(null);
-		
+		//=================START MENU SELECTION OBJECT CREATION AND FUNCTIONALITY=================
 		JButton viewOrderButton = new JButton("View Order");
 		viewOrderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -196,11 +206,9 @@ public class Window extends JFrame {
 		});
 		logoutButton.setBounds(40, 548, 89, 23);
 		panelMenu.add(logoutButton);
+		//========================================================================================
 		
-		panelMakeOrder = new JPanel();
-		layeredMainPane.add(panelMakeOrder, "name_247097960798500");
-		panelMakeOrder.setLayout(null);
-		
+		//=================START MAKE ORDER OBJECT CREATION AND FUNCTIONALITY=================
 		subtotalField = new JTextField();
 		subtotalField.setText("0.00");
 		subtotalField.setEditable(false);
@@ -234,17 +242,10 @@ public class Window extends JFrame {
 		lblNewLabel.setBounds(738, 494, 69, 14);
 		panelMakeOrder.add(lblNewLabel);
 		
-		orderNumField = new JTextField();
-		orderNumField.setEditable(false);
-		orderNumField.setBounds(817, 610, 86, 20);
-		panelMakeOrder.add(orderNumField);
-		orderNumField.setColumns(10);
-		
 		JLabel orderNumLabel = new JLabel("Order #");
 		orderNumLabel.setBounds(728, 613, 46, 14);
 		panelMakeOrder.add(orderNumLabel);
 		
-		// START ORDER PANEL BUTTONS
 		JButton sendButton = new JButton("Send");
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -291,7 +292,7 @@ public class Window extends JFrame {
 		});
 		orderBackButton.setBounds(10, 568, 89, 23);
 		panelMakeOrder.add(orderBackButton);
-		// END ORDER PANEL BUTTONS
+		//====================================================================================
 		
 		//===============Food Category Buttons===============
 		//Drink button
@@ -348,13 +349,9 @@ public class Window extends JFrame {
 		});
 		dessertButton.setBounds(10, 182, 89, 23);
 		panelMakeOrder.add(dessertButton);
-		//======================================================
+		//====================================================
 		
-		//==========Layered item pane and panels===========
-		layeredItemPane = new JLayeredPane();
-		layeredItemPane.setBounds(117, 11, 582, 591);
-		panelMakeOrder.add(layeredItemPane);
-		layeredItemPane.setLayout(new CardLayout(0, 0));
+		//==========panels for food items===========
 		//Drink panel
 		panelDrink = new JPanel();
 		layeredItemPane.add(panelDrink, "name_255391516279300");
@@ -380,7 +377,7 @@ public class Window extends JFrame {
 		panelDessert = new JPanel();
 		layeredItemPane.add(panelDessert, "name_255414797153500");
 		panelDessert.setLayout(null);
-		//==================================================
+		//==========================================
 		
 		//===============Drink Options===============
 		JButton asahiButton = new JButton("");
@@ -388,7 +385,6 @@ public class Window extends JFrame {
 		asahiButton.setIcon(new ImageIcon(asahiImage));
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -403,7 +399,6 @@ public class Window extends JFrame {
 		seafoodSpringRollsButton.setIcon(new ImageIcon(springrollImage));
 		seafoodSpringRollsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -418,7 +413,6 @@ public class Window extends JFrame {
 		salmonSushiButton.setIcon(new ImageIcon(sushiImage));
 		salmonSushiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -433,7 +427,6 @@ public class Window extends JFrame {
 		blueOceanButton.setIcon(new ImageIcon(blueOceanImage));
 		blueOceanButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -448,7 +441,6 @@ public class Window extends JFrame {
 		chickenKatsuButton.setIcon(new ImageIcon(katsuImage));
 		chickenKatsuButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -463,7 +455,6 @@ public class Window extends JFrame {
 		carmelAppleButton.setIcon(new ImageIcon(appleImage));
 		carmelAppleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(itemsObj.return_item_data(e.getSource()).toString());
 				add_to_table(itemsObj.return_item_data(e.getSource()));
 			}
 		});
@@ -508,11 +499,27 @@ public class Window extends JFrame {
 		lblNewLabel_6.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_6.setBounds(10, 122, 100, 14);
 		panelDessert.add(lblNewLabel_6);
+		//=============================================
 		
+		//==============ALL SCROLL PANELS FOR TABLES==============
 		JScrollPane OrderscrollPane = new JScrollPane();
 		OrderscrollPane.setBounds(709, 11, 245, 419);
 		panelMakeOrder.add(OrderscrollPane);
 		
+		JScrollPane viewOrderscrollPane = new JScrollPane();
+		viewOrderscrollPane.setBounds(10, 11, 569, 580);
+		panelOrders.add(viewOrderscrollPane);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(589, 11, 365, 470);
+		panelOrders.add(scrollPane);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(600, 11, 354, 467);
+		panelPay.add(scrollPane_1);
+		//========================================================
+		
+		//==============ALL TABLES==============
 		table = new JTable();
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
@@ -538,14 +545,6 @@ public class Window extends JFrame {
 		table.getColumnModel().getColumn(1).setPreferredWidth(52);
 		OrderscrollPane.setViewportView(table);
 		
-		panelOrders = new JPanel();
-		layeredMainPane.add(panelOrders, "name_71322738432400");
-		panelOrders.setLayout(null);
-		
-		JScrollPane viewOrderscrollPane = new JScrollPane();
-		viewOrderscrollPane.setBounds(10, 11, 569, 580);
-		panelOrders.add(viewOrderscrollPane);
-		
 		table_1 = new JTable();
 		table_1.setModel(new DefaultTableModel(
 			new Object[][] {
@@ -568,13 +567,6 @@ public class Window extends JFrame {
 			}
 		});
 		viewOrderscrollPane.setViewportView(table_1);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(589, 11, 365, 470);
-		panelOrders.add(scrollPane);
-		
-		
-		// table_1 mouse click event
 		table_1.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent event) {
 				if(table_1.getSelectedRow() == -1) {return;}
@@ -605,6 +597,30 @@ public class Window extends JFrame {
 			}
 		});
 		scrollPane.setViewportView(table_2);
+		
+		table_3 = new JTable();
+		table_3.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Item", "Quantity", "Price"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, Integer.class, Float.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		scrollPane_1.setViewportView(table_3);
+		//======================================
 		
 		JButton btnNewButton = new JButton("Back");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -691,46 +707,6 @@ public class Window extends JFrame {
 		itemsOrdersField.setColumns(10);
 		itemsOrdersField.setBounds(770, 569, 86, 20);
 		panelOrders.add(itemsOrdersField);
-		
-		panelPay = new JPanel();
-		layeredMainPane.add(panelPay, "name_29246515247100");
-		panelPay.setLayout(null);
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(600, 11, 354, 467);
-		panelPay.add(scrollPane_1);
-		
-		table_3 = new JTable();
-		table_3.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Item", "Quantity", "Price"
-			}
-		) {
-			Class[] columnTypes = new Class[] {
-				String.class, Integer.class, Float.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-			boolean[] columnEditables = new boolean[] {
-				false, false, false
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
-		scrollPane_1.setViewportView(table_3);
-		
-		JLayeredPane layeredPanePay = new JLayeredPane();
-		layeredPanePay.setBounds(10, 11, 578, 580);
-		panelPay.add(layeredPanePay);
-		layeredPanePay.setLayout(new CardLayout(0, 0));
-		
-		JPanel panelPayOption = new JPanel();
-		layeredPanePay.add(panelPayOption, "name_29905756660300");
-		panelPayOption.setLayout(null);
 		
 		JButton btnNewButton_3 = new JButton("CASH");
 		btnNewButton_3.addActionListener(new ActionListener() {
