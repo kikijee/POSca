@@ -97,12 +97,10 @@ public class Window extends JFrame {
 		
 		layeredItemPane = new JLayeredPane();
 		layeredItemPane.setBounds(117, 11, 582, 591);
-		panelMakeOrder.add(layeredItemPane);
 		layeredItemPane.setLayout(new CardLayout(0, 0));
 		
 		JLayeredPane layeredPanePay = new JLayeredPane();
 		layeredPanePay.setBounds(10, 11, 578, 580);
-		panelPay.add(layeredPanePay);
 		layeredPanePay.setLayout(new CardLayout(0, 0));
 		//======================================================
 		
@@ -131,6 +129,8 @@ public class Window extends JFrame {
 		layeredPanePay.add(panelPayOption, "name_29905756660300");
 		panelPayOption.setLayout(null);
 		//===================================================
+		panelMakeOrder.add(layeredItemPane);
+		panelPay.add(layeredPanePay);
 		
 		//=================START LOGIN OBJECT CREATION AND FUNCTIONALITY=================
 		usernameField = new JTextField();
