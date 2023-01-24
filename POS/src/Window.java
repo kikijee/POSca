@@ -17,6 +17,7 @@ import javax.swing.JScrollBar;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -163,6 +164,9 @@ public class Window extends JFrame {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
 					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/posdatabase","root","root");
+					String query = "";
+					PreparedStatement ps = con.prepareStatement(query);
+					ps.setString(ABORT, query);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
