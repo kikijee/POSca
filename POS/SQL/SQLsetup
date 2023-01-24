@@ -1,9 +1,9 @@
 #sql initial set up
 INSERT INTO users
-VALUES ("j3","beezy",false)
+VALUES ("j3","beezy",false);
 INSERT INTO users
-VALUES ("java","deez",false)
+VALUES ("java","deez",false);
 INSERT INTO users
-VALUES ("christian","mani",true)
+VALUES ("christian","mani",true);
 INSERT INTO users
-VALUES ("alex","nel",true)
+VALUES ("alex","nel",true);

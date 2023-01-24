@@ -18,6 +18,8 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,6 +60,7 @@ public class Window extends JFrame {
 	private IDandPassword logObj;	// object that holds all the users
 	private int row = -1;			// placeholder for row selection (utility for order selection on the table in the panelOrders)
 	private int placeholder = 0;	// placeholder int value (utility for the cash input functionality)
+	private PosDatabase myData = new PosDatabase();
 	
 	// main function
 	public static void main(String[] args) {
@@ -161,16 +164,7 @@ public class Window extends JFrame {
 		JButton loginButton = new JButton("LOGIN");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/posdatabase","root","root");
-					String query = "";
-					PreparedStatement ps = con.prepareStatement(query);
-					ps.setString(ABORT, query);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				
 				/*	code pre sql implementation
 				if(logObj.validate(usernameField.getText(),new String(passwordField.getPassword()))) {
 					currUser = logObj.get_user(usernameField.getText());
@@ -1220,5 +1214,9 @@ public class Window extends JFrame {
 		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
 		model.setValueAt(true,orders.indexOf(currOrder),4);
 		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
+	}
+	
+	void login_sql() {
+		
 	}
 }
