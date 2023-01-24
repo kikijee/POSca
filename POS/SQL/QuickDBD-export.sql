@@ -9,8 +9,8 @@
 
 CREATE TABLE `Items` (
     `ItemID` int  NOT NULL ,
-    `Name` String  NOT NULL ,
-    `Price` decimal(,2)  NOT NULL ,
+    `Name` varchar(30)  NOT NULL ,
+    `Price` decimal(5,2)  NOT NULL ,
     PRIMARY KEY (
         `ItemID`
     )
@@ -18,13 +18,13 @@ CREATE TABLE `Items` (
 
 CREATE TABLE `Orders` (
     `OrderID` int  NOT NULL ,
-    `Subtotal` decimal(,2)  NOT NULL ,
-    `Total` decimal(,2)  NOT NULL ,
-    `Time` String  NOT NULL ,
-    `Server` String  NOT NULL ,
+    `Subtotal` decimal(5,2)  NOT NULL ,
+    `Total` decimal(5,2)  NOT NULL ,
+    `Time` varchar(5)  NOT NULL ,
+    `Server` varchar(20)  NOT NULL ,
     `Paid` boolean  NOT NULL ,
-    `PayType` String  NULL ,
-    `Change` decimal(,2)  NULL ,
+    `PayType` varchar(4)  NULL ,
+    `Change` decimal(5,2)  NULL ,
     `NumItems` int  NOT NULL ,
     PRIMARY KEY (
         `OrderID`
@@ -33,4 +33,5 @@ CREATE TABLE `Orders` (
 
 ALTER TABLE `Orders` ADD CONSTRAINT `fk_Orders_Server` FOREIGN KEY(`Server`)
 REFERENCES `Users` (`Username`);
+
 

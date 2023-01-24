@@ -15,6 +15,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollBar;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -158,7 +160,14 @@ public class Window extends JFrame {
 		JButton loginButton = new JButton("LOGIN");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/posdatabase","root","root");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				/*	code pre sql implementation
 				if(logObj.validate(usernameField.getText(),new String(passwordField.getPassword()))) {
 					currUser = logObj.get_user(usernameField.getText());
 					usernameField.setText(null);
@@ -170,6 +179,7 @@ public class Window extends JFrame {
 					usernameField.setText(null);
 					passwordField.setText(null);
 				}
+				*/
 				
 			}
 		});
