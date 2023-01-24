@@ -60,7 +60,7 @@ public class Window extends JFrame {
 	private IDandPassword logObj;	// object that holds all the users
 	private int row = -1;			// placeholder for row selection (utility for order selection on the table in the panelOrders)
 	private int placeholder = 0;	// placeholder int value (utility for the cash input functionality)
-	private PosDatabase myData = new PosDatabase();
+	private PosDatabase myData = new PosDatabase();	// POS database object holding all functionality for the sql queries
 	
 	// main function
 	public static void main(String[] args) {
@@ -164,7 +164,17 @@ public class Window extends JFrame {
 		JButton loginButton = new JButton("LOGIN");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				currUser = myData.login(usernameField.getText(),new String(passwordField.getPassword()));
+				if(currUser != null) {
+					usernameField.setText(null);
+					passwordField.setText(null);
+					switchMainPanel(panelMenu);
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Invalid Username or Password","ERROR",JOptionPane.INFORMATION_MESSAGE);
+					usernameField.setText(null);
+					passwordField.setText(null);
+				}
 				/*	code pre sql implementation
 				if(logObj.validate(usernameField.getText(),new String(passwordField.getPassword()))) {
 					currUser = logObj.get_user(usernameField.getText());
@@ -1216,7 +1226,4 @@ public class Window extends JFrame {
 		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
 	}
 	
-	void login_sql() {
-		
-	}
 }
