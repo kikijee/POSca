@@ -258,6 +258,7 @@ public class Window extends JFrame {
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(table.getRowCount() != 0) {
+					//
 					add_order();
 					clear_table(table,subtotalField,totalField,numItemField);
 				}
@@ -394,7 +395,6 @@ public class Window extends JFrame {
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				add_to_table(itemsObj.return_item_data(e.getSource()));
-				System.out.println(itemsObj.print_itemNo(e.getSource()));
 			}
 		});
 		asahiButton.setBounds(10, 11, 100, 100);
@@ -1062,7 +1062,6 @@ public class Window extends JFrame {
 	
 	// will update price when user adds/removes items (for making orders)
 	public void update_price(Float priceUpdate) {
-		//System.out.println(priceUpdate);
 		Float price = Float.parseFloat(subtotalField.getText());
 		price += priceUpdate;
 		subtotalField.setText(number.format((price)));
@@ -1098,6 +1097,7 @@ public class Window extends JFrame {
 				items.add(item);
 			}
 			Order orderTemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser.return_username(),time,items);
+			myData.add_order(orderTemp.return_id(), Float.valueOf(subtotalField.getText()), Float.valueOf(totalField.getText()), time, currUser.return_username(), false, Integer.valueOf(numItemField.getText()));	// sql data insertion
 			orders.add(orderTemp);
 			add_to_order_table();
 			return orderTemp;
@@ -1192,7 +1192,9 @@ public class Window extends JFrame {
 	
 	public void pay_cash() {
 		Float change = currOrder.pay_cash(Float.valueOf(textField.getText().replace("-","0")));
+		change = Float.valueOf(number.format(change));
 		if(change != null) {
+			myData.pay_cash(Float.valueOf(textField.getText().replace("-","0")), currOrder.return_id(), change); // SQL
 			textField_1.setText("0.00");
 			textField_2.setText(number.format((change)));
 			toggle_pay_cash(false);

@@ -18,7 +18,7 @@ public class Order {
 	private int id;
 	private Float change;
 	private Payment payType;
-	private static int idCounter = 0;
+	private static int idCounter = new PosDatabase().get_max_id()+1;
 	
 	public Order(float sub, float tot, int num, boolean p, String u, String t,ArrayList<Thuple<String,Integer,Float>> it){
 		this.subtotal = sub;
