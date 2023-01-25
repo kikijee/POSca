@@ -1,4 +1,4 @@
-#sql initial set up
+#sql initial set up USER TABLE
 INSERT INTO users
 VALUES ("j3","beezy",false);
 INSERT INTO users

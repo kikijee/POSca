@@ -1,7 +1,8 @@
 import java.util.HashMap;
 public class IDandPassword {
 	
-	//private HashMap<String,String> login = new HashMap<String,String>();
+	//***THIS CLASS USE HAS DEPRECIATED DUE TO THE USE OF THE SQL DATABASE HANDELING OF USERS***
+	
 	private HashMap<String,User> login = new HashMap<String,User>();
 	
     IDandPassword(){
@@ -15,6 +16,7 @@ public class IDandPassword {
     	login.put("j3", new User("j3","beezy",false));
     	login.put("java", new User("java","deez",false));
     	login.put("christian", new User("christian","mani",true));
+    	
     }
     
     public boolean validate(String username, String password) {

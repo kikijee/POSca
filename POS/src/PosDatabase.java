@@ -19,6 +19,7 @@ public class PosDatabase {
         myPassword = "root";
     }
     
+    //===============USER TABLE QUERY FUNCTIONALITY===============
     public User login(String user, String password) {
     	try {
 			Class.forName(myDriver);
@@ -122,4 +123,5 @@ public class PosDatabase {
     	System.out.println("1 row deleted from USERS");
     	return true;
     }
+   //============================================================
 }

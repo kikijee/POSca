@@ -8,25 +8,15 @@ import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import java.awt.CardLayout;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JScrollBar;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.awt.event.ActionEvent;
-import javax.swing.JTextArea;
-import java.awt.GridLayout;
 import javax.swing.SwingConstants;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
@@ -57,7 +47,7 @@ public class Window extends JFrame {
 	private JPanel prev_panel;		// pointer to prev panel;
 	private Items itemsObj;			// items object that holds all items
 	private User currUser;			// pointer to user object that is currently logged in
-	private IDandPassword logObj;	// object that holds all the users
+	//private IDandPassword logObj;	// object that holds all the users ***CLASS AND ITS FUNCTIONALITY IS DEPRECIATED*** (code pre sql implementation)
 	private int row = -1;			// placeholder for row selection (utility for order selection on the table in the panelOrders)
 	private int placeholder = 0;	// placeholder int value (utility for the cash input functionality)
 	private PosDatabase myData = new PosDatabase();	// POS database object holding all functionality for the sql queries
@@ -81,7 +71,7 @@ public class Window extends JFrame {
 	 */
 	public Window() {
 		number.setMaximumFractionDigits(2);	// for Float to String conversion 2 decimal point precision 
-		logObj = new IDandPassword();		// login object holding all user info (MAY CHANGE FOR THE DATABASE)
+		//logObj = new IDandPassword();		// login object holding all user info (MAY CHANGE FOR THE DATABASE) ***DEPRECIATED***
 		itemsObj = new Items();				// item object creation (MAY CHANGE FOR THE DATABASE)
 		
 		//=================START DEFUALT WINDOW SETTINGS=================
@@ -175,7 +165,7 @@ public class Window extends JFrame {
 					usernameField.setText(null);
 					passwordField.setText(null);
 				}
-				/*	code pre sql implementation
+				/*	(code pre sql implementation)
 				if(logObj.validate(usernameField.getText(),new String(passwordField.getPassword()))) {
 					currUser = logObj.get_user(usernameField.getText());
 					usernameField.setText(null);
@@ -998,6 +988,7 @@ public class Window extends JFrame {
 		
 	}
 	
+	// functions to switch panels
 	public void switchMainPanel(JPanel panel){
         layeredMainPane.removeAll();
         layeredMainPane.add(panel);
@@ -1019,8 +1010,9 @@ public class Window extends JFrame {
 		layeredPanel.revalidate();
 	}
 	
-	public void add_to_table(Thuple<String,Float, Integer>thuple) {	// adding item to table (Tuple object has item name and price)
-		int check = if_exist(thuple.x);	// checking if item exists already
+	// adding item to JTable (Tuple object has item name and price... for making orders)
+	public void add_to_table(Thuple<String,Float, Integer>thuple) {
+		int check = if_exist(thuple.x);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(check != -1) {
 			model.setValueAt(Integer.valueOf(model.getValueAt(check,1).toString())+Integer.valueOf(1),check,1);
@@ -1032,6 +1024,7 @@ public class Window extends JFrame {
 		update_price(thuple.y);
 	}
 	
+	// adds item to JTable (for viewing order) ***USE MAY CHANGE FOR DATABASE CONNECTION***
 	public void add_to_order_table() {
 		if(!orders.isEmpty()) {
 			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
@@ -1040,7 +1033,8 @@ public class Window extends JFrame {
 		}
 	}
 	
-	public void remove_from_table() {	// function removes item from order table
+	// function removes item from order pre sending and paying (for making order)
+	public void remove_from_table() {	
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(table.getSelectedRow() != -1) {
 			Float price = (Float.parseFloat(model.getValueAt(table.getSelectedRow(),2).toString()))/(Integer.valueOf(model.getValueAt(table.getSelectedRow(),1).toString()));
@@ -1056,6 +1050,7 @@ public class Window extends JFrame {
 		}
 	}
 	
+	// checks to see if an item already exists in a JTable (to help with quantity count of an item)
 	public int if_exist(String item) {	// checks if item exists in the order table
 		for(int i = 0; i < table.getRowCount(); i++) {
 			if(table.getModel().getValueAt(i, 0) == item) {
@@ -1065,7 +1060,8 @@ public class Window extends JFrame {
 		return -1;
 	}
 	
-	public void update_price(Float priceUpdate) { // will update price when user adds/removes items
+	// will update price when user adds/removes items (for making orders)
+	public void update_price(Float priceUpdate) {
 		//System.out.println(priceUpdate);
 		Float price = Float.parseFloat(subtotalField.getText());
 		price += priceUpdate;
@@ -1083,7 +1079,8 @@ public class Window extends JFrame {
 		}
 	}
 	
-	public Order add_order() { // will add order to orders ArrayList
+	// creates and adds an order object to the order ArrayList
+	public Order add_order() { 
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		Calendar date = Calendar.getInstance();
 		String time = String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
@@ -1109,12 +1106,14 @@ public class Window extends JFrame {
 		return null;
 	}
 	
+	// prints order list(DEBUGGING USE ONLY)
 	public void print_orders() {
 		for(int i = 0; i < orders.size(); i++) {
 			orders.get(i).print_order();
 		}
 	}
 	
+	// function clears a JTable and its text fields
 	public void clear_table(JTable table, JTextField sub, JTextField tot, JTextField it) {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.getDataVector().removeAllElements();
@@ -1124,6 +1123,7 @@ public class Window extends JFrame {
 		it.setText("0");
 	}
 	
+	// helper functions for num_input(...) 
 	public String addChar(String str, char ch, int position) {
 	    return str.substring(0, position) + ch + str.substring(position);
 	}
@@ -1134,6 +1134,7 @@ public class Window extends JFrame {
 		return str;
 	}
 	
+	// function to handle cash input in the pay state
 	public void num_input(int num, boolean clear, boolean back) {
 		if(placeholder == 2) {placeholder++;}
 		String text = textField.getText();
