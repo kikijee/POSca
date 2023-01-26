@@ -26,6 +26,7 @@ CREATE TABLE `Orders` (
     `PayType` varchar(4)  NULL ,
     `Change` decimal(5,2)  NULL ,
     `NumItems` int  NOT NULL ,
+    `Items` varbinary(65000) NOT NULL ,
     PRIMARY KEY (
         `OrderID`
     )

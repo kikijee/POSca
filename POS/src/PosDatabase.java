@@ -135,7 +135,27 @@ public class PosDatabase {
    //============================================================
     
    //===============ORDER TABLE QUERY FUNCTIONALITY===============
-   // HAS NOT BEEN TESTED YET
+   public boolean validate_id(Order order) {
+	   try {
+			Class.forName(myDriver);
+			Connection con = DriverManager.getConnection(myUrl,myUsername,myPassword);
+			Statement st = con.createStatement();	// statement object for String to SQL
+			int id = order.return_id();
+			while(true) {
+				String query = "SELECT * FROM orders WHERE orderid = "+String.valueOf(id)+";"; 
+				ResultSet rs = st.executeQuery(query);
+				if(!rs.next()) {order.set_id(id); Order.set_id_counter(id); break;}	
+				else {id++;}
+			}
+			st.close();
+	    	con.close();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	   return true;
+   }
+    
    public boolean add_order(int id, Float subtotal, Float total, String time, String server, boolean paid, int numItems, ArrayList<Thuple<String,Integer,Float>>items) {
 	   byte data[] = null;
 	   try {
@@ -265,6 +285,7 @@ public class PosDatabase {
    }
    
    public boolean redraw_orders(ArrayList<Order> orders) {
+	   orders.clear();
 	   try {
 			Class.forName(myDriver);
 			Connection con = DriverManager.getConnection(myUrl,myUsername,myPassword);

@@ -159,7 +159,6 @@ public class Window extends JFrame {
 					usernameField.setText(null);
 					passwordField.setText(null);
 					switchMainPanel(panelMenu);
-					revalidate_orders();
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Invalid Username or Password","ERROR",JOptionPane.INFORMATION_MESSAGE);
@@ -190,6 +189,7 @@ public class Window extends JFrame {
 		JButton viewOrderButton = new JButton("View Order");
 		viewOrderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				revalidate_orders();
 				switchMainPanel(panelOrders);
 			}
 		});
@@ -274,7 +274,8 @@ public class Window extends JFrame {
 				if(table.getRowCount() != 0) {
 					prev_panel = panelMenu;
 					currOrder = add_order();
-					clear_table(table,subtotalField,totalField,numItemField);
+					//clear_table(table,subtotalField,totalField,numItemField);
+					revalidate_orders();
 					currOrder.draw_orders((DefaultTableModel) table_3.getModel(),textField_3,textField_4,textField_5);
 					switchMainPanel(panelPay);
 				}
@@ -636,6 +637,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 				table_1.getSelectionModel().clearSelection();
+				clear_table(table_1,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 				switchMainPanel(panelMenu);
 				row = -1;
 			}
@@ -879,6 +881,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				textField.setText("-.--");
 				placeholder = 0; 
+				revalidate_orders();
 				switch_panel(layeredPanePay,panelPayOption);
 			}
 		});
@@ -921,6 +924,7 @@ public class Window extends JFrame {
 		JButton btnNewButton_8 = new JButton("Back");
 		btnNewButton_8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				revalidate_orders();
 				switch_panel(layeredPanePay,panelPayOption);
 			}
 		});
@@ -930,7 +934,7 @@ public class Window extends JFrame {
 		btnPayCard = new JButton("Pay");
 		btnPayCard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currOrder.pay_card();
+				pay_card();
 				toggle_pay_card(false);
 			}
 		});
@@ -1084,9 +1088,10 @@ public class Window extends JFrame {
 				items.add(item);
 			}
 			Order orderTemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser.return_username(),time,items);
+			myData.validate_id(orderTemp);
 			myData.add_order(orderTemp.return_id(), Float.valueOf(subtotalField.getText()), Float.valueOf(totalField.getText()), time, currUser.return_username(), false, Integer.valueOf(numItemField.getText()),items);	// sql data insertion
 			orders.add(orderTemp);
-			add_to_order_table();
+			//add_to_order_table();
 			return orderTemp;
 		}
 		clear_table(table,subtotalField,totalField,numItemField);
@@ -1213,6 +1218,13 @@ public class Window extends JFrame {
 		}
 	}
 	
+	void pay_card() {
+		myData.pay_card(currOrder.return_id());
+		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+		model.setValueAt(true,orders.indexOf(currOrder),4);
+		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
+	}
+	
 	void toggle_pay_cash(boolean mode) {
 		btn0.setEnabled(mode);
 		btn1.setEnabled(mode);
@@ -1229,15 +1241,14 @@ public class Window extends JFrame {
 		btnPay.setEnabled(mode);
 	}
 	void toggle_pay_card(boolean mode) {
-		myData.pay_card(currOrder.return_id());
 		btnPayCard.setEnabled(mode);
-		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
-		model.setValueAt(true,orders.indexOf(currOrder),4);
-		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
 	}
 	
 	void revalidate_orders() {
 		if(myData.redraw_orders(orders)) {	// retrieving any existing order information from the database
+			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+			model.getDataVector().removeAllElements();
+			model.fireTableDataChanged();
 			for(int i = 0; i < orders.size(); i++) {
 				orders.get(i).add_order((DefaultTableModel) table_1.getModel());
 			}
