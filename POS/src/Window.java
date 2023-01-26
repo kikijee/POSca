@@ -189,6 +189,7 @@ public class Window extends JFrame {
 		JButton viewOrderButton = new JButton("View Order");
 		viewOrderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				revalidate_orders();
 				switchMainPanel(panelOrders);
 			}
 		});
@@ -273,7 +274,8 @@ public class Window extends JFrame {
 				if(table.getRowCount() != 0) {
 					prev_panel = panelMenu;
 					currOrder = add_order();
-					clear_table(table,subtotalField,totalField,numItemField);
+					//clear_table(table,subtotalField,totalField,numItemField);
+					revalidate_orders();
 					currOrder.draw_orders((DefaultTableModel) table_3.getModel(),textField_3,textField_4,textField_5);
 					switchMainPanel(panelPay);
 				}
@@ -394,7 +396,6 @@ public class Window extends JFrame {
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				add_to_table(itemsObj.return_item_data(e.getSource()));
-				System.out.println(itemsObj.print_itemNo(e.getSource()));
 			}
 		});
 		asahiButton.setBounds(10, 11, 100, 100);
@@ -636,6 +637,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 				table_1.getSelectionModel().clearSelection();
+				clear_table(table_1,subtotalOrdersField,totalOrdersField,itemsOrdersField);
 				switchMainPanel(panelMenu);
 				row = -1;
 			}
@@ -665,20 +667,7 @@ public class Window extends JFrame {
 		JButton btnNewButton_2 = new JButton("Void");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!table_1.getSelectionModel().isSelectionEmpty()) {
-					if(currUser.is_admin()) {
-						int remove = table_1.getSelectedRow();
-						// table_1 edit
-						DefaultTableModel model = (DefaultTableModel) table_1.getModel();
-						model.removeRow(remove);
-						// removal of order from array
-						orders.remove(remove);
-						clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
-						table_1.getSelectionModel().clearSelection();
-						row = -1;
-						
-					}
-				}
+				void_order();
 			}
 		});
 		btnNewButton_2.setBounds(589, 526, 89, 23);
@@ -892,6 +881,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				textField.setText("-.--");
 				placeholder = 0; 
+				revalidate_orders();
 				switch_panel(layeredPanePay,panelPayOption);
 			}
 		});
@@ -934,6 +924,7 @@ public class Window extends JFrame {
 		JButton btnNewButton_8 = new JButton("Back");
 		btnNewButton_8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				revalidate_orders();
 				switch_panel(layeredPanePay,panelPayOption);
 			}
 		});
@@ -943,7 +934,7 @@ public class Window extends JFrame {
 		btnPayCard = new JButton("Pay");
 		btnPayCard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currOrder.pay_card();
+				pay_card();
 				toggle_pay_card(false);
 			}
 		});
@@ -1062,7 +1053,6 @@ public class Window extends JFrame {
 	
 	// will update price when user adds/removes items (for making orders)
 	public void update_price(Float priceUpdate) {
-		//System.out.println(priceUpdate);
 		Float price = Float.parseFloat(subtotalField.getText());
 		price += priceUpdate;
 		subtotalField.setText(number.format((price)));
@@ -1079,11 +1069,15 @@ public class Window extends JFrame {
 		}
 	}
 	
+	public String get_time() {
+		Calendar date = Calendar.getInstance();
+		return String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
+	}
+	
 	// creates and adds an order object to the order ArrayList
 	public Order add_order() { 
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		Calendar date = Calendar.getInstance();
-		String time = String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
+		String time = get_time();
 		if(model.getRowCount() != 0) {
 			ArrayList<Thuple<String,Integer,Float>>items = new ArrayList<Thuple<String,Integer,Float>>();
 			Thuple<String,Integer,Float> item;
@@ -1098,12 +1092,33 @@ public class Window extends JFrame {
 				items.add(item);
 			}
 			Order orderTemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser.return_username(),time,items);
+			myData.validate_id(orderTemp);
+			myData.add_order(orderTemp.return_id(), Float.valueOf(subtotalField.getText()), Float.valueOf(totalField.getText()), time, currUser.return_username(), false, Integer.valueOf(numItemField.getText()),items);	// sql data insertion
 			orders.add(orderTemp);
-			add_to_order_table();
+			//add_to_order_table();
 			return orderTemp;
 		}
 		clear_table(table,subtotalField,totalField,numItemField);
 		return null;
+	}
+	
+	void void_order() {
+		if(!table_1.getSelectionModel().isSelectionEmpty()) {
+			if(currUser.is_admin()) {
+				DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+				int remove = table_1.getSelectedRow();
+				int id = Integer.valueOf(model.getValueAt(remove,0).toString());
+				myData.void_order(id,get_time(),currUser.return_username(),null);
+				// table_1 edit
+				model.removeRow(remove);
+				// removal of order from array
+				orders.remove(remove);
+				clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
+				table_1.getSelectionModel().clearSelection();
+				row = -1;
+				
+			}
+		}
 	}
 	
 	// prints order list(DEBUGGING USE ONLY)
@@ -1192,7 +1207,9 @@ public class Window extends JFrame {
 	
 	public void pay_cash() {
 		Float change = currOrder.pay_cash(Float.valueOf(textField.getText().replace("-","0")));
+		change = Float.valueOf(number.format(change));
 		if(change != null) {
+			myData.pay_cash(Float.valueOf(textField.getText().replace("-","0")), currOrder.return_id(), change); // SQL
 			textField_1.setText("0.00");
 			textField_2.setText(number.format((change)));
 			toggle_pay_cash(false);
@@ -1203,6 +1220,13 @@ public class Window extends JFrame {
 		else {
 			JOptionPane.showMessageDialog(null, "Invalid Amount","ERROR",JOptionPane.INFORMATION_MESSAGE);
 		}
+	}
+	
+	void pay_card() {
+		myData.pay_card(currOrder.return_id());
+		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+		model.setValueAt(true,orders.indexOf(currOrder),4);
+		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
 	}
 	
 	void toggle_pay_cash(boolean mode) {
@@ -1222,9 +1246,17 @@ public class Window extends JFrame {
 	}
 	void toggle_pay_card(boolean mode) {
 		btnPayCard.setEnabled(mode);
-		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
-		model.setValueAt(true,orders.indexOf(currOrder),4);
-		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
+	}
+	
+	void revalidate_orders() {
+		if(myData.redraw_orders(orders)) {	// retrieving any existing order information from the database
+			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+			model.getDataVector().removeAllElements();
+			model.fireTableDataChanged();
+			for(int i = 0; i < orders.size(); i++) {
+				orders.get(i).add_order((DefaultTableModel) table_1.getModel());
+			}
+		}
 	}
 	
 }
