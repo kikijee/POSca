@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 
 import javax.swing.JTextField;
@@ -18,7 +19,7 @@ public class Order {
 	private int id;
 	private Float change;
 	private Payment payType;
-	private static int idCounter = 0;
+	private static int idCounter = new PosDatabase().get_max_id()+1;
 	
 	public Order(float sub, float tot, int num, boolean p, String u, String t,ArrayList<Thuple<String,Integer,Float>> it){
 		this.subtotal = sub;
@@ -32,6 +33,28 @@ public class Order {
 		this.payType = null;
 		this.change = null;
 		this.id = idCounter++;
+	}
+	
+	public static void set_id_counter(int id_) {
+		idCounter = id_;
+	}
+	
+	public void set_id(int id_) {
+		id = id_;
+	}
+	
+	public Order(int id_ ,float sub ,float tot ,String time_ ,String server ,Boolean p ,String type ,float change_ ,int num ,ArrayList<Thuple<String,Integer,Float>> it) {
+		id = id_; subtotal = sub; total = tot; time = time_; user = server; paid = p; change = change_; numItems = num; items = it;
+		
+		if(type!=null) {
+			if(type.equals("CARD")) {payType = Payment.CARD;}
+			else if(type.equals("CASH")) {payType = Payment.CASH;}
+		}
+		else {
+			if(paid == true) {owed = 0.00f;}
+			else {owed = tot;}
+			payType = null;
+		}
 	}
 	
 	public void print_order() {

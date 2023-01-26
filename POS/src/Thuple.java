@@ -1,5 +1,11 @@
 
-public class Thuple<X,Y,Z>{
+import java.io.Serializable;
+
+public class Thuple<X,Y,Z> implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public final X x;
 	public Y y;
 	public final Z z;
@@ -12,3 +18,4 @@ public class Thuple<X,Y,Z>{
 		return "("+x+","+y+","+z+")";
 	}
 }
+
