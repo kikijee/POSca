@@ -158,6 +158,7 @@ public class Window extends JFrame {
 				if(currUser != null) {
 					usernameField.setText(null);
 					passwordField.setText(null);
+          myData.checkItemprice(e, itemsObj);
 					switchMainPanel(panelMenu);
 				}
 				else {
@@ -1260,3 +1261,4 @@ public class Window extends JFrame {
 	}
 	
 }
+
