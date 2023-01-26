@@ -34,6 +34,16 @@ public class Order {
 		this.id = idCounter++;
 	}
 	
+	public Order(int id_ ,float sub ,float tot ,String time_ ,String server ,Boolean p ,String type ,float change_ ,int num ,ArrayList<Thuple<String,Integer,Float>> it) {
+		id = id_; subtotal = sub; total = tot; time = time_; user = server; paid = p; change = change_; numItems = num; items = it;
+		if(type!=null) {
+			if(paid == true) {owed = 0.00f;}
+			if(type.equals("CARD")) {payType = Payment.CARD;}
+			else if(type.equals("CASH")) {payType = Payment.CASH;}
+		}
+		else {payType = null;}
+	}
+	
 	public void print_order() {
 		System.out.println("id:"+id+" subtotal:"+subtotal+" total:"+total+" numItems:"+numItems+" paid:"+paid+" user:"+user+" time:"+time);
 		for(int i = 0; i < items.size(); i++) {

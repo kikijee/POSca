@@ -159,6 +159,7 @@ public class Window extends JFrame {
 					usernameField.setText(null);
 					passwordField.setText(null);
 					switchMainPanel(panelMenu);
+					revalidate_orders();
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Invalid Username or Password","ERROR",JOptionPane.INFORMATION_MESSAGE);
@@ -258,7 +259,6 @@ public class Window extends JFrame {
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(table.getRowCount() != 0) {
-					//
 					add_order();
 					clear_table(table,subtotalField,totalField,numItemField);
 				}
@@ -665,20 +665,7 @@ public class Window extends JFrame {
 		JButton btnNewButton_2 = new JButton("Void");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!table_1.getSelectionModel().isSelectionEmpty()) {
-					if(currUser.is_admin()) {
-						int remove = table_1.getSelectedRow();
-						// table_1 edit
-						DefaultTableModel model = (DefaultTableModel) table_1.getModel();
-						model.removeRow(remove);
-						// removal of order from array
-						orders.remove(remove);
-						clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
-						table_1.getSelectionModel().clearSelection();
-						row = -1;
-						
-					}
-				}
+				void_order();
 			}
 		});
 		btnNewButton_2.setBounds(589, 526, 89, 23);
@@ -1097,13 +1084,32 @@ public class Window extends JFrame {
 				items.add(item);
 			}
 			Order orderTemp = new Order(Float.valueOf(subtotalField.getText()),Float.valueOf(totalField.getText()),Integer.valueOf(numItemField.getText()),false,currUser.return_username(),time,items);
-			myData.add_order(orderTemp.return_id(), Float.valueOf(subtotalField.getText()), Float.valueOf(totalField.getText()), time, currUser.return_username(), false, Integer.valueOf(numItemField.getText()));	// sql data insertion
+			myData.add_order(orderTemp.return_id(), Float.valueOf(subtotalField.getText()), Float.valueOf(totalField.getText()), time, currUser.return_username(), false, Integer.valueOf(numItemField.getText()),items);	// sql data insertion
 			orders.add(orderTemp);
 			add_to_order_table();
 			return orderTemp;
 		}
 		clear_table(table,subtotalField,totalField,numItemField);
 		return null;
+	}
+	
+	void void_order() {
+		if(!table_1.getSelectionModel().isSelectionEmpty()) {
+			if(currUser.is_admin()) {
+				DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+				int remove = table_1.getSelectedRow();
+				int id = Integer.valueOf(model.getValueAt(remove,0).toString());
+				myData.void_order(id);
+				// table_1 edit
+				model.removeRow(remove);
+				// removal of order from array
+				orders.remove(remove);
+				clear_table(table_2,subtotalOrdersField,totalOrdersField,itemsOrdersField);
+				table_1.getSelectionModel().clearSelection();
+				row = -1;
+				
+			}
+		}
 	}
 	
 	// prints order list(DEBUGGING USE ONLY)
@@ -1223,10 +1229,19 @@ public class Window extends JFrame {
 		btnPay.setEnabled(mode);
 	}
 	void toggle_pay_card(boolean mode) {
+		myData.pay_card(currOrder.return_id());
 		btnPayCard.setEnabled(mode);
 		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
 		model.setValueAt(true,orders.indexOf(currOrder),4);
 		model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
+	}
+	
+	void revalidate_orders() {
+		if(myData.redraw_orders(orders)) {	// retrieving any existing order information from the database
+			for(int i = 0; i < orders.size(); i++) {
+				orders.get(i).add_order((DefaultTableModel) table_1.getModel());
+			}
+		}
 	}
 	
 }
