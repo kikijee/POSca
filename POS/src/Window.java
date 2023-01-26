@@ -49,7 +49,7 @@ public class Window extends JFrame {
 	private User currUser;			// pointer to user object that is currently logged in
 	//private IDandPassword logObj;	// object that holds all the users ***CLASS AND ITS FUNCTIONALITY IS DEPRECIATED*** (code pre sql implementation)
 	private int row = -1;			// placeholder for row selection (utility for order selection on the table in the panelOrders)
-	private int placeholder = 0;	// placeholder int value (utility for the cash input functionality)
+	private int placeholder = 0;	// placFeholder int value (utility for the cash input functionality)
 	private PosDatabase myData = new PosDatabase();	// POS database object holding all functionality for the sql queries
 	
 	// main function
@@ -158,6 +158,7 @@ public class Window extends JFrame {
 				if(currUser != null) {
 					usernameField.setText(null);
 					passwordField.setText(null);
+					myData.checkItemprice(e, itemsObj);
 					switchMainPanel(panelMenu);
 				}
 				else {
@@ -394,7 +395,6 @@ public class Window extends JFrame {
 		asahiButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				add_to_table(itemsObj.return_item_data(e.getSource()));
-				System.out.println(itemsObj.print_itemNo(e.getSource()));
 			}
 		});
 		asahiButton.setBounds(10, 11, 100, 100);

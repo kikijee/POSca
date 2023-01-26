@@ -1,7 +1,7 @@
 
 public class Thuple<X,Y,Z>{
 	public final X x;
-	public final Y y;
+	public Y y;
 	public final Z z;
 	Thuple(X x, Y y, Z z){
 		this.x = x;
