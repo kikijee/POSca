@@ -246,6 +246,16 @@ public class PosDatabase {
 			Statement st = con.createStatement();	// statement object for String to SQL
 			int num = st.executeUpdate(query);
 			if(num == 0) {st.close();con.close();return false;}	// user does not exist
+			/*
+			query = "INSERT INTO voidorders VALUES (?,?,?,?);";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setInt(1,orderId);
+			ps.setString(2,time);
+			ps.setString(3,server);
+			ps.setString(4, desc);
+			num = ps.executeUpdate();
+			if(num == 0) {st.close();con.close();return false;}
+			*/
 			st.close();
 	    	con.close();
 		} catch (Exception e1) {
