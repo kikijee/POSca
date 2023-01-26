@@ -35,4 +35,17 @@ CREATE TABLE `Orders` (
 ALTER TABLE `Orders` ADD CONSTRAINT `fk_Orders_Server` FOREIGN KEY(`Server`)
 REFERENCES `Users` (`Username`);
 
+CREATE TABLE `VoidOrders` (
+	`orderIdVoid` int NOT NULL,
+	`timeVoid` varchar(5) NOT NULL,
+    `serverVoid` varchar(20) NOT NULL,
+    `description` tinytext NULL,
+    PRIMARY KEY(
+		`orderIdVoid`
+    )
+);
+
+ALTER TABLE `VoidOrders` ADD CONSTRAINT `fk_VoidOrders_Orders` FOREIGN KEY(`orderIdVoid`)
+REFERENCES `Orders` (`orderId`);
+
 

@@ -238,7 +238,7 @@ public class PosDatabase {
    	return true;
    }
    
-   public boolean void_order(int orderId) {
+   public boolean void_order(int orderId, String time, String server, String desc) {
 	   try {
 			Class.forName(myDriver);
 			Connection con = DriverManager.getConnection(myUrl,myUsername,myPassword);

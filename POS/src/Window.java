@@ -1069,11 +1069,15 @@ public class Window extends JFrame {
 		}
 	}
 	
+	public String get_time() {
+		Calendar date = Calendar.getInstance();
+		return String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
+	}
+	
 	// creates and adds an order object to the order ArrayList
 	public Order add_order() { 
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		Calendar date = Calendar.getInstance();
-		String time = String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE));
+		String time = get_time();
 		if(model.getRowCount() != 0) {
 			ArrayList<Thuple<String,Integer,Float>>items = new ArrayList<Thuple<String,Integer,Float>>();
 			Thuple<String,Integer,Float> item;
@@ -1104,7 +1108,7 @@ public class Window extends JFrame {
 				DefaultTableModel model = (DefaultTableModel) table_1.getModel();
 				int remove = table_1.getSelectedRow();
 				int id = Integer.valueOf(model.getValueAt(remove,0).toString());
-				myData.void_order(id);
+				myData.void_order(id,get_time(),currUser.return_username(),null);
 				// table_1 edit
 				model.removeRow(remove);
 				// removal of order from array
