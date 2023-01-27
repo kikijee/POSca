@@ -7,3 +7,16 @@ INSERT INTO users
 VALUES ("christian","mani",true);
 INSERT INTO users
 VALUES ("alex","nel",true);
+
+INSERT INTO items
+VALUES (001,"Asahi",4.99);
+INSERT INTO items
+VALUES (002,"Seafood Spring Rolls",5.99);
+INSERT INTO items
+VALUES (003,"Salmon Sushi",6.99);
+INSERT INTO items
+VALUES (004,"Blue Ocean Roll",19.99);
+INSERT INTO items
+VALUES (005,"Chicken Katsu Entree",21.99);
+INSERT INTO items
+VALUES (006,"Carmel Apple",4.99);

@@ -190,7 +190,7 @@ public class Window extends JFrame {
 		JButton viewOrderButton = new JButton("View Order");
 		viewOrderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				revalidate_orders();
+				revalidate_orders(null);
 				switchMainPanel(panelOrders);
 			}
 		});
@@ -275,8 +275,8 @@ public class Window extends JFrame {
 				if(table.getRowCount() != 0) {
 					prev_panel = panelMenu;
 					currOrder = add_order();
-					//clear_table(table,subtotalField,totalField,numItemField);
-					revalidate_orders();
+					currOrder = revalidate_orders(currOrder.return_id());
+					
 					currOrder.draw_orders((DefaultTableModel) table_3.getModel(),textField_3,textField_4,textField_5);
 					switchMainPanel(panelPay);
 				}
@@ -882,7 +882,7 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				textField.setText("-.--");
 				placeholder = 0; 
-				revalidate_orders();
+				revalidate_orders(null);
 				switch_panel(layeredPanePay,panelPayOption);
 			}
 		});
@@ -925,7 +925,7 @@ public class Window extends JFrame {
 		JButton btnNewButton_8 = new JButton("Back");
 		btnNewButton_8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				revalidate_orders();
+				revalidate_orders(null);
 				switch_panel(layeredPanePay,panelPayOption);
 			}
 		});
@@ -1215,6 +1215,7 @@ public class Window extends JFrame {
 			textField_2.setText(number.format((change)));
 			toggle_pay_cash(false);
 			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+			System.out.println(orders.indexOf(currOrder));
 			model.setValueAt(true,orders.indexOf(currOrder),4);
 			model.setValueAt(String.valueOf(currOrder.return_type()),orders.indexOf(currOrder),5);
 		}
@@ -1249,15 +1250,19 @@ public class Window extends JFrame {
 		btnPayCard.setEnabled(mode);
 	}
 	
-	void revalidate_orders() {
+	Order revalidate_orders(Integer id) {
+		Order order = null;
 		if(myData.redraw_orders(orders)) {	// retrieving any existing order information from the database
 			DefaultTableModel model = (DefaultTableModel) table_1.getModel();
 			model.getDataVector().removeAllElements();
 			model.fireTableDataChanged();
 			for(int i = 0; i < orders.size(); i++) {
 				orders.get(i).add_order((DefaultTableModel) table_1.getModel());
+				if(id != null)
+					{if(orders.get(i).return_id() == id) {order = orders.get(i);}}
 			}
 		}
+		return order;
 	}
 	
 }
