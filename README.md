@@ -1,4 +1,5 @@
-# POSca
+# POSca<br>
+Built by: Christian Manibusan and Alex Nelson
 ## Description:
 This program is too handle the order and payment functionalities of a point of sale system while using a external realtional database to store its info, on a fully functioning GUI.
 
@@ -15,3 +16,9 @@ Java, JavaSwing, JDBM, WindowBuilder, MySQL
 - Pay functionality, this functionality allows users to select from two payment options *CASH or CARD* and when payed the program updates the order in the database with *Pay = TRUE*, *PayType = [payment option]*, *Change = [whether or not the cutomer needed change]*<br>
 <img src = "https://user-images.githubusercontent.com/84474876/216436770-c35413bf-5102-4f1b-a116-b611eb6029e9.png" width=50% height=50%><br>
 - Void a selected order, can only be used by user admins, by doing this it deletes the order locally and on the database.<br>
+
+## Database Design:
+- The current data base design includes the following entities:
+  - Users
+  - Items
+  - Orders
