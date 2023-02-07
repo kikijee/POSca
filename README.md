@@ -22,6 +22,42 @@ Java, JavaSwing, JDBM, WindowBuilder, MySQL
 - The current data base design includes the following entities and their attributes shown in the diagram below:<br>
 <img src = "https://user-images.githubusercontent.com/84474876/217354131-c543a5ac-5580-4167-9211-df550680a9d7.png" width=50% height=50%><br>
 *Create using https://app.quickdatabasediagrams.com/*<br>
+- SQL Table Creation:<br>
+``` SQL
+CREATE TABLE `Users` (
+    `Username` varchar(20)  NOT NULL ,
+    `Password` varchar(20)  NOT NULL ,
+    `Admin` boolean  NOT NULL ,
+    PRIMARY KEY (
+        `Username`
+    )
+);
+CREATE TABLE `Items` (
+    `ItemID` int  NOT NULL ,
+    `Name` varchar(30)  NOT NULL ,
+    `Price` decimal(5,2)  NOT NULL ,
+    PRIMARY KEY (
+        `ItemID`
+    )
+);
+CREATE TABLE `Orders` (
+    `OrderID` int  NOT NULL ,
+    `Subtotal` decimal(5,2)  NOT NULL ,
+    `Total` decimal(5,2)  NOT NULL ,
+    `Time` varchar(5)  NOT NULL ,
+    `Server` varchar(20)  NOT NULL ,
+    `Paid` boolean  NOT NULL ,
+    `PayType` varchar(4)  NULL ,
+    `Change` decimal(5,2)  NULL ,
+    `NumItems` int  NOT NULL ,
+    `Items` varbinary(65000) NOT NULL ,
+    PRIMARY KEY (
+        `OrderID`
+    )
+);
+ALTER TABLE `Orders` ADD CONSTRAINT `fk_Orders_Server` FOREIGN KEY(`Server`)
+REFERENCES `Users` (`Username`);
+```
 - Current functionalities for the program to database include:
   - Selecting queries for drawing order data to local JTable of pos GUI.
   - Selecting queries for user login validation to compare against inputed credentials.
