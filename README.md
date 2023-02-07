@@ -19,7 +19,15 @@ Java, JavaSwing, JDBM, WindowBuilder, MySQL
 - Void a selected order, can only be used by user admins, by doing this it deletes the order locally and on the database.<br>
 
 ## Database Design:
-- The current data base design includes the following entities:
-  - Users
-  - Items
-  - Orders
+- The current data base design includes the following entities and their attributes shown in the diagram below:<br>
+<img src = "https://user-images.githubusercontent.com/84474876/217354131-c543a5ac-5580-4167-9211-df550680a9d7.png" width=50% height=50%><br>
+*Create using https://app.quickdatabasediagrams.com/*<br>
+- Current functionalities for the program to database include:
+  - Selecting queries for drawing order data to local JTable of pos GUI.
+  - Selecting queries for user login validation to compare against inputed credentials.
+  - Selecting queries for validation of food prices.
+  - Order table insertion (*sending order*)
+  - Order table updating (*paying for order*)
+  - Order table deletion (*voiding order*)
+  - Order table *'OrderId'* validation (*to ensure unique id for every order no matter what instance of this program sent an order first*)
+  
