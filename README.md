@@ -1,7 +1,8 @@
 # POSca<br>
 Built by: Christian Manibusan and Alex Nelson
 ## Description:
-This program is too handle the order and payment functionalities of a point of sale system while using a external realtional database to store its info, on a fully functioning GUI.
+This program handles the order and payment functionalities of a point of sale system while using a external realtional database to store its data. The
+interface of the system is also on a fully functioning GUI that the user operates.
 
 ## Tools Used:
 Java, JavaSwing, JDBM, WindowBuilder, MySQL
